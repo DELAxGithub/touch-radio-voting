@@ -454,7 +454,7 @@
 
     // Load custom items & settings from localStorage
     const savedCustom = JSON.parse(localStorage.getItem('touch_radio_custom_items') || '{"meigens":[], "heisokus":[]}');
-    let gasEndpointUrl = localStorage.getItem('touch_radio_gas_url') || '';
+    let gasEndpointUrl = localStorage.getItem('touch_radio_gas_url') || 'https://script.google.com/macros/s/AKfycbxFCA_TW5wpVlgYY1gVg5fae-rGjoPWikGf17ivQLPaaJAHdjY0GZLJ6nD2448ErHu0bA/exec';
 
     let meigenItems = [...savedCustom.meigens, ...RAW_DATA.meigens];
     let heisokuItems = [...savedCustom.heisokus, ...RAW_DATA.heisokus];
