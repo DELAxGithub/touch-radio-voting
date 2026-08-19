@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>たっちレディオ 名言60選 ＆ 閉塞感60選 投票フォーム</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans JP', 'M PLUS Rounded 1c', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .badge-tabuchi { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .badge-tashiro { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .badge-dela { background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .badge-tatsuo { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
+    .badge-hata { background-color: #fce7f3; color: #9d174d; border: 1px solid #fbcfe8; }
+    .badge-tokunaga { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .badge-heisoku { background-color: #ccfbf1; color: #115e59; border: 1px solid #5eead4; }
+    .badge-card { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .badge-survey { background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .badge-custom { background-color: #fdf4ff; color: #86198f; border: 1px solid #f5d0fe; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-32">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 py-7 sm:py-9">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase mb-2">
+            <i data-lucide="radio" class="w-3.5 h-3.5"></i> たっちレディオ カードゲーム企画
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-black tracking-tight">たっちレディオ 名言＆閉塞感 投票フォーム</h1>
+          <p class="mt-2 text-white/90 text-xs sm:text-sm max-w-2xl leading-relaxed">
+            【名言 60個】と【閉塞感 60個】をそれぞれ選んで投票するフォームです。リストにない項目は「＋自由投稿」からその場で追加＆即時反映できます！
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 md:flex-col sm:items-end justify-start">
+          <button onclick="openCustomItemModal()" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white text-orange-600 hover:bg-orange-50 font-black rounded-xl text-xs sm:text-sm transition shadow-lg">
+            <i data-lucide="plus-circle" class="w-4 h-4 stroke-[2.5]"></i> 自由記述で新しく追加する
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="exportAllCsv()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/30 rounded-xl text-xs font-semibold transition">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> 全CSV保存
+            </button>
+            <button onclick="selectRandomAll()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-300 hover:bg-amber-200 text-slate-900 font-bold rounded-xl text-xs transition shadow-md">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 自動選択
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mode Switcher Tabs (Large) -->
+  <div class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between gap-2 overflow-x-auto py-2">
+        
+        <!-- Tab: Quotes -->
+        <button onclick="switchMode('meigen')" id="modeTab-meigen" class="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-black text-sm sm:text-base transition-all bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md">
+          <i data-lucide="message-square-quote" class="w-5 h-5"></i>
+          <span>① 名言の投票</span>
+          <span id="meigenTabBadge" class="text-xs bg-white text-orange-600 px-2 py-0.5 rounded-full font-bold">0 / 60</span>
+        </button>
+
+        <!-- Tab: Heisoku -->
+        <button onclick="switchMode('heisoku')" id="modeTab-heisoku" class="flex-1 min-w-[200px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+          <i data-lucide="cloud-rain" class="w-5 h-5"></i>
+          <span>② 閉塞感の投票</span>
+          <span id="heisokuTabBadge" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-bold">0 / 56</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Selection Progress Bar -->
+  <section class="bg-slate-50/95 backdrop-blur-md border-b border-slate-200 py-3 sticky top-[61px] z-30 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        
+        <!-- Active Mode Counter -->
+        <div class="flex items-center gap-4 flex-1 min-w-[240px]">
+          <div class="flex items-baseline gap-1.5">
+            <span id="activeModeLabel" class="text-xs font-bold text-slate-500 uppercase">名言 選択中</span>
+            <span id="activeCount" class="text-2xl font-black text-orange-600">0</span>
+            <span id="activeMax" class="text-slate-400 font-semibold">/ 60</span>
+          </div>
+
+          <div class="flex-1 max-w-xs bg-slate-200 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-200">
+            <div id="activeProgressBar" class="bg-gradient-to-r from-amber-500 to-orange-600 h-full rounded-full transition-all duration-300 w-0"></div>
+          </div>
+
+          <div id="activeStatusBadge" class="hidden sm:inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium bg-slate-200 text-slate-600">
+            あと 60 個選択
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2">
+          <button onclick="openCustomItemModal()" class="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-bold text-xs rounded-xl transition">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            項目を追加
+          </button>
+          <button onclick="openSelectedModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold text-xs sm:text-sm rounded-xl transition shadow-sm">
+            <i data-lucide="list-checks" class="w-4 h-4 text-orange-500"></i>
+            選択中 (<span id="activeSelectedBtnCount">0</span>)
+          </button>
+          <button onclick="resetCurrentModeSelection()" class="inline-flex items-center gap-1 px-2 py-1.5 text-slate-400 hover:text-red-600 text-xs font-medium rounded-xl transition" title="このモードの選択をクリア">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+          <button id="mainSubmitBtn" onclick="openSubmitModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md cursor-pointer">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            投票まとめ確認
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+
+    <!-- Controls Panel -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm mb-6">
+      <div class="flex flex-col gap-4">
+        
+        <!-- Search bar -->
+        <div class="relative">
+          <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="searchInput" placeholder="検索キーワードを入力（名言、閉塞感、文脈、放送回など）..." 
+                 class="w-full pl-11 pr-10 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-200 rounded-xl text-sm transition">
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Filter Sub-Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
+          
+          <div class="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold text-slate-600 gap-1">
+            <button onclick="setSubFilter('all')" id="subtab-all" class="px-3 py-1.5 rounded-lg transition bg-white text-orange-600 shadow-sm">すべて (<span id="subCountAll">0</span>)</button>
+            <button onclick="setSubFilter('selected')" id="subtab-selected" class="px-3 py-1.5 rounded-lg transition hover:text-slate-900">選択中のみ (<span id="subCountSelected">0</span>)</button>
+            <button onclick="setSubFilter('custom')" id="subtab-custom" class="px-3 py-1.5 rounded-lg transition hover:text-slate-900">自由投稿のみ (<span id="subCountCustom">0</span>)</button>
+          </div>
+
+          <!-- Dynamic Speaker / Source Filter -->
+          <div id="filterDropdownContainer" class="flex items-center gap-2 text-xs">
+            <!-- Rendered based on mode -->
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Active List Status -->
+    <div class="flex items-center justify-between mb-4 px-1 text-xs text-slate-500 font-medium">
+      <div>
+        表示中: <span id="visibleCount" class="font-bold text-slate-800">0</span> 件
+      </div>
+      <div>
+        <span>カードをクリックして選択 / 解除</span>
+      </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Rendered dynamically -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden bg-white rounded-2xl p-12 text-center border border-dashed border-slate-300">
+      <div class="inline-flex p-3 bg-orange-50 rounded-full text-orange-500 mb-3">
+        <i data-lucide="inbox" class="w-6 h-6"></i>
+      </div>
+      <h3 class="text-base font-bold text-slate-700">該当する項目が見つかりませんでした</h3>
+      <p class="text-xs text-slate-400 mt-1">検索条件やフィルターを変更するか、自由記述で新しく追加してください。</p>
+      <div class="mt-4 flex items-center justify-center gap-2">
+        <button onclick="resetFilters()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
+          検索条件をクリア
+        </button>
+        <button onclick="openCustomItemModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded-xl transition shadow">
+          <i data-lucide="plus" class="w-4 h-4"></i> この項目を追加する
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Custom Item Modal (自由記述投稿フォーム) -->
+  <div id="customItemModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="p-2 bg-orange-100 text-orange-600 rounded-xl">
+            <i data-lucide="edit-3" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900" id="customModalTitle">新しい項目を自由投稿する</h3>
+            <p class="text-xs text-slate-400">入力後、一覧に即座に追加され自動で選択されます</p>
+          </div>
+        </div>
+        <button onclick="closeCustomItemModal()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleCustomItemSubmit(event)" class="space-y-4 text-left">
+        
+        <div class="flex items-center gap-2 p-1 bg-slate-100 rounded-xl text-xs font-bold text-slate-600">
+          <button type="button" onclick="setCustomModalType('meigen')" id="customTypeMeigen" class="flex-1 py-1.5 rounded-lg transition bg-white text-orange-600 shadow-sm">
+            💬 名言を追加
+          </button>
+          <button type="button" onclick="setCustomModalType('heisoku')" id="customTypeHeisoku" class="flex-1 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900">
+            ☁️ 閉塞感を追加
+          </button>
+        </div>
+
+        <!-- Speaker field (only for Meigen) -->
+        <div id="customSpeakerField">
+          <label class="block text-xs font-bold text-slate-700 mb-1">発言者 <span class="text-red-500">*</span></label>
+          <select id="customSpeakerInput" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <option value="田淵智也">田淵智也</option>
+            <option value="田代智一">田代智一</option>
+            <option value="デラさん">デラさん</option>
+            <option value="サンキュータツオ">サンキュータツオ</option>
+            <option value="畑亜貴">畑亜貴</option>
+            <option value="徳永憲">徳永憲</option>
+            <option value="田代智一 / 田淵智也">田代・田淵共演</option>
+            <option value="その他">その他（自由入力）</option>
+          </select>
+        </div>
+
+        <!-- Content -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" id="customContentLabel">名言内容 <span class="text-red-500">*</span></label>
+          <textarea id="customContentInput" required rows="2" placeholder="例: 人はいつか死ぬ" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 leading-relaxed"></textarea>
+        </div>
+
+        <!-- Context / Detail -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" id="customDetailLabel">文脈・エピソード・詳細（任意）</label>
+          <textarea id="customDetailInput" rows="3" placeholder="どんな場面や文脈での発言か、なぜ印象に残っているかなど..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 leading-relaxed"></textarea>
+        </div>
+
+        <!-- Episode -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">関連放送回（任意）</label>
+          <input type="text" id="customEpisodeInput" placeholder="例: 第400回、大忘年会2024 など" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeCustomItemModal()" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700">
+            キャンセル
+          </button>
+          <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i> 一覧に追加して選択する
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Selected Items Modal -->
+  <div id="selectedModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+      
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <i data-lucide="list-checks" class="w-5 h-5 text-orange-500"></i>
+            <span id="modalTitle">選択中の項目一覧</span>
+          </h3>
+          <p class="text-xs text-slate-500 mt-0.5">現在選択しているカードの一覧です</p>
+        </div>
+        <button onclick="closeSelectedModal()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="modalItemsContainer" class="p-5 overflow-y-auto flex-1 space-y-2.5 custom-scrollbar">
+        <!-- Dynamic list -->
+      </div>
+
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-3">
+        <button onclick="resetCurrentModeSelection(); closeSelectedModal();" class="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1">
+          この選択をすべてクリア
+        </button>
+        <button onclick="closeSelectedModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-sm font-semibold rounded-xl transition">
+          閉じる
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Submit & Export Modal -->
+  <div id="submitModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 text-center">
+      
+      <div class="w-14 h-14 bg-gradient-to-tr from-amber-400 to-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20">
+        <i data-lucide="clipboard-check" class="w-8 h-8"></i>
+      </div>
+
+      <h3 class="text-xl font-black text-slate-800 mb-1">投票内容の確認・エクスポート</h3>
+      <p class="text-xs text-slate-500 mb-5 leading-relaxed">
+        選択した名言・閉塞感（自由投稿分も含む）の投票状況を確認し、CSV保存や投票完了を行えます。
+      </p>
+
+      <!-- Stats Summary Card -->
+      <div class="grid grid-cols-2 gap-3 mb-5 text-left">
+        <div class="p-3.5 bg-orange-50/70 border border-orange-200 rounded-xl">
+          <div class="text-[11px] font-bold text-orange-600 uppercase">① 名言の選択</div>
+          <div class="text-xl font-black text-orange-900 mt-1">
+            <span id="finalMeigenCount">0</span> <span class="text-xs text-orange-600 font-semibold">/ 60個</span>
+          </div>
+          <div class="text-[10px] text-orange-500 mt-0.5" id="meigenStatusText">未完了</div>
+        </div>
+
+        <div class="p-3.5 bg-teal-50/70 border border-teal-200 rounded-xl">
+          <div class="text-[11px] font-bold text-teal-700 uppercase">② 閉塞感の選択</div>
+          <div class="text-xl font-black text-teal-900 mt-1">
+            <span id="finalHeisokuCount">0</span> <span class="text-xs text-teal-600 font-semibold">/ 60個</span>
+          </div>
+          <div class="text-[10px] text-teal-600 mt-0.5" id="heisokuStatusText">未完了</div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <button onclick="downloadSelectedCombinedCsv()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i> 選択した全投票データをCSVダウンロード
+        </button>
+        <button onclick="downloadSelectedMeigenCsv()" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 text-orange-500"></i> 名言のみCSVダウンロード (<span id="dlMeigenCount">0</span>件)
+        </button>
+        <button onclick="downloadSelectedHeisokuCsv()" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+          <i data-lucide="file-text" class="w-3.5 h-3.5 text-teal-600"></i> 閉塞感のみCSVダウンロード (<span id="dlHeisokuCount">0</span>件)
+        </button>
+        <button onclick="closeSubmitModal()" class="w-full py-2 text-slate-400 hover:text-slate-600 text-xs font-medium transition">
+          選択に戻る
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-slate-700 flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none">
+    <i data-lucide="check" class="w-5 h-5 text-amber-400"></i>
+    <div>
+      <div class="text-xs font-bold" id="toastTitle">通知</div>
+      <div class="text-[11px] text-slate-300" id="toastDesc">メッセージ</div>
+    </div>
+  </div>
+
+  <!-- Data -->
+  <script>
+    const RAW_DATA = {"meigens": [{"id": "M001", "speaker": "田淵智也", "quote": "田淵さん「ちゃんと切ってる俺好き～」", "context": "第400回の放送。映画や舞台で開演の直前まで携帯電話をいじっている人は、開演した後に万が一音が出て恥ずかしい思いをする不安を感じたりしていないですかね？というメールに対して、田淵さんが、映画館で映画を観るときには映画泥棒が流れてる最中に携帯電話の電源を切るアピールをすることで「ちゃんとマナーを守っている俺好き～」と思えて、周りの電源を切ってない人に対するいかがなものかという感情をもたなくなるという時に出た名言でした。", "episode": "第400回", "timestamp": "2025/08/22 22:36:00"}, {"id": "M002", "speaker": "サンキュータツオ", "quote": "サンキュータツオさんが仰った「ダメだよ田淵くん丸くなっちゃ」です", "context": "トラウマや地雷を踏むなどの、本来その当事者が聞いたらどう思うのかという話をしていた際に田淵さんが「使ってしまうことも確かにある。けれど今の話を聞いてヒヤヒヤしたという感覚を学びのチャンスとして受け止める」の後にサンキュータツオさんが仰られていました！（該当部分638回の 23:33〜）", "episode": "第638回", "timestamp": "2025/08/23 11:31:20"}, {"id": "M003", "speaker": "田代智一", "quote": "田代さん「おバカ様」", "context": "第655回の放送。バカとアホは使いたくない田淵さんが「偏差値が低い」と言う言葉を使っていたがしっくりこなかったので、田代さんが提案された名言", "episode": "第655回", "timestamp": "2025/08/23 21:56:35"}, {"id": "M004", "speaker": "田代智一", "quote": "田代さん「この人生を1度目じゃなくて、2度目と思って生きる。」", "context": "第569回の放送。好きな人と上手くコミュニケーションが取れないという悩みで、「人はいつか死ぬ」のになんでアプローチしなかったんだろうと何十年後に後悔が出る話から、SF映画でよくある1度未来を見に行って過去に戻った時に、人生を大切にできるという話からでた田代さんがSF映画の好きな所として仰られた名言。", "episode": "第569回", "timestamp": "2025/08/24 0:12:20"}, {"id": "M005", "speaker": "その他・未分類", "quote": "医者サイコー", "context": "第510回がまさに「医者サイコー」回で、その前から言われていた名言だとは思いますが、いろんな不調をお医者さんに行ったら治った話と、田淵さんが発達障害であることを公表した回でした。", "episode": "第510回", "timestamp": "2025/08/24 5:38:12"}, {"id": "M006", "speaker": "その他・未分類", "quote": "High Touch Scenario", "context": "500回記念でリスナー有志（私含む）が製作し、第566回からEDで流れている名曲！今もBoothで売ってるんですか？", "episode": "第500回", "timestamp": "2025/08/24 5:47:00"}, {"id": "M007", "speaker": "その他・未分類", "quote": "パーフェクトな自分を目指すのではなく、ベターな自分になればいい", "context": "田代さんが仰ったお便り主へのお言葉です(2024.3)", "episode": "", "timestamp": "2025/08/24 13:00:49"}, {"id": "M008", "speaker": "その他・未分類", "quote": "弱いままでいい。その感性がクリエイティブな表現を生む。(ネットの)強くならなきゃという風潮はプレッシャーになる。(心は)マッチョにならなくていい。", "context": "2024.4.1に自分のXに投稿してました田代さんの言葉です。刺さりました文脈は覚えてませんが、閉塞感を投稿してきた方への回答だったはずです", "episode": "", "timestamp": "2025/08/24 13:07:30"}, {"id": "M009", "speaker": "その他・未分類", "quote": "友情に上下はあってはならない", "context": "2019年11月頃、田代さんの名言、友人と対等でないと悩んでるリスナーに対して", "episode": "", "timestamp": "2025/08/25 4:03:52"}, {"id": "M010", "speaker": "田代智一", "quote": "田代さん「人はいつか死ぬ」", "context": "第394回放送。田淵さんが好きなバンドやアニソンなどを自分で発信したいけど、まとめサイトなどにまとめられたりするのが嫌なので、やるか迷っているという相談。やってみて違ったらやめる。人はいつか死ぬからやってみる。田代さんが飲み会でよく言う名言。田淵さんいわく田代さんの決め台詞。この名言のおかげでアニソン派が始まったんだなと思いました。", "episode": "第394回", "timestamp": "2025/08/25 10:48:59"}, {"id": "M011", "speaker": "その他・未分類", "quote": "知らなかったです私、そんなの。", "context": "第568回 3週間前の水を加湿器に入れたまま寝た田淵さん、見事「ポンティアック熱」に感染。超音波式の加湿器は新鮮な水でないと細菌に感染するということを知らなくての発言。", "episode": "第568回", "timestamp": "2025/08/28 21:28:08"}, {"id": "M012", "speaker": "田淵智也", "quote": "田淵さん「ノーカウントにしてほしい」", "context": "725回　最初の雑談　これは風邪かどうか談義の時です　第一声がこれだったので印象に残ってます　汎用性もあると思います", "episode": "第725回", "timestamp": "2025/08/29 8:48:27"}, {"id": "M013", "speaker": "その他・未分類", "quote": "映画化決定", "context": "743回他(初出しはどこか分かりません)　トラブルは人生という映画のなかでは面白くなるという視点が目からウロコでした　私もその考えを持ちながら生きようと思いました", "episode": "第743回", "timestamp": "2025/08/29 8:51:52"}, {"id": "M014", "speaker": "その他・未分類", "quote": "正式な幽霊部員", "context": "サンキュータツオさんですね 相反する言葉が繋がってて面白いと思います", "episode": "", "timestamp": "2025/08/29 10:51:17"}, {"id": "M015", "speaker": "サンキュータツオ", "quote": "サンキュータツオさん  ｢こんな可愛かったっけ｣", "context": "蛙化現象の誤用にキレている田淵さんに対する一言ですその後の田代さんの(田淵君は萌えキャラ)という一言も合わせて面白いです", "episode": "", "timestamp": "2025/08/29 11:07:18"}, {"id": "M016", "speaker": "その他・未分類", "quote": "医者最高！", "context": "田淵さんか事あるごとに「医者最高！」と言っていた記憶だけあります。文脈は忘れましたが…多分風邪を治してくれたとか、お医者さんに行った話の時に言っていたと思います。", "episode": "", "timestamp": "2025/09/01 8:05:35"}, {"id": "M017", "speaker": "その他・未分類", "quote": "医者サイコー", "context": "体の不調があったときは病院にかかり専門家に任せたほうが絶対にいいということ。健康オタクで病院大好きな田淵さんの話", "episode": "", "timestamp": "2025/09/03 0:21:56"}, {"id": "M018", "speaker": "その他・未分類", "quote": "スマホを殺す", "context": "説明は省略しますが田淵さんの名言", "episode": "", "timestamp": "2025/09/05 1:55:24"}, {"id": "M019", "speaker": "田代智一", "quote": "ベストではなくベターである(by田代さん)", "context": "『たっちレディオ大忘年会2024』収録中に、人生相談をされていた田淵さんに対して、田代さんがおっしゃっていたかと思います。", "episode": "忘年会", "timestamp": "2025/09/06 9:24:22"}, {"id": "M020", "speaker": "デラさん", "quote": "ストレスはテストステロンで解決！(byデラさん)", "context": "2025年の放送内。", "episode": "", "timestamp": "2025/09/06 9:44:59"}, {"id": "M021", "speaker": "田代智一", "quote": "田代さん「イライラするのわかるぞ～と心の中でエールを送ってる。」", "context": "苦手な人と仕事する時にイライラしている相談者に田代さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/06 23:11:18"}, {"id": "M022", "speaker": "田代智一", "quote": "田代さん「イライラしないためには、まずイライラしない。」", "context": "苦手な人と仕事する時にイライラしてしまう相談者に田代さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/06 23:13:31"}, {"id": "M023", "speaker": "田淵智也", "quote": "田淵さん「よく寝る。」", "context": "苦手な人と仕事する時にイライラしてしまう相談者に田淵さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/06 23:15:20"}, {"id": "M024", "speaker": "田淵智也", "quote": "田淵さん「危険だなと思った人とは距離をとる。」", "context": "苦手な人と仕事する時にどうしたらいいという相談者に田淵さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/06 23:17:26"}, {"id": "M025", "speaker": "田代智一", "quote": "田代さん「全部無視してやり過ごす。」", "context": "苦手な人と仕事をする時にイライラしてしまう相談者に田代さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/06 23:19:49"}, {"id": "M026", "speaker": "田淵智也", "quote": "田淵さん「期待をしないとイライラしない。」", "context": "苦手な人と仕事する時にイライラしてしまう相談者に田淵さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/06 23:21:28"}, {"id": "M027", "speaker": "田淵智也", "quote": "田淵さん「俺みたいになれビーム」", "context": "相手に自分みたいになって欲しいと思っている人が出してる雰囲気をビームに例えられてた名言。", "episode": "", "timestamp": "2025/09/06 23:26:53"}, {"id": "M028", "speaker": "田淵智也", "quote": "田淵さん「やりがいをちゃんと能動的に見つける人が残っていく。」", "context": "誰かに言われてやるのではなく自分からやりがいを見つけた人が残っていく業界だと言うことを仰られていた名言。", "episode": "", "timestamp": "2025/09/06 23:29:12"}, {"id": "M029", "speaker": "田淵智也", "quote": "田淵さん「マジで1回4日死ぬほど寝てみる。」", "context": "休日に遊ぶ体力がないことを相談された時に田淵さんが仰られていた名言", "episode": "第1回", "timestamp": "2025/09/07 2:19:53"}, {"id": "M030", "speaker": "田淵智也", "quote": "淵さん「寝ないとダメな人は寝た方がいい。」", "context": "休日に遊ぶ体力がない相談者に対して、田淵さんが仰られた名言。", "episode": "", "timestamp": "2025/09/07 2:21:22"}, {"id": "M031", "speaker": "田代智一 / 田淵智也", "quote": "田代さん、田淵さん「昨日よりましな私。先週よりはましな今週をいこう。」", "context": "", "episode": "", "timestamp": "2025/09/07 2:23:16"}, {"id": "M032", "speaker": "田代智一", "quote": "田代さん「繊細さの感度問題は永遠に解決できない。」", "context": "田淵さんがライブで周り迷惑をかけないように、細心の注意をはらっていたが、結局受け取り手の感度の問題だということを仰られていた名言", "episode": "", "timestamp": "2025/09/07 2:25:42"}, {"id": "M033", "speaker": "田代智一", "quote": "田代さん「そんなところもありますよスタンスでいいのかもしれない。」", "context": "田淵さんがプライベートでライブを観に行った時に、周りに迷惑をかけないように細心の注意をはらっていたが後日SNSで迷惑だったと発信されたことがあったといわれたときに田代さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/07 2:28:35"}, {"id": "M034", "speaker": "田代智一", "quote": "田代さん「キアヌ・リーヴス理論で笑い飛ばす。(俺はプライベートではこういうキャラなんだ)」", "context": "田淵さんがプライベートでライブを観に行った時に、周りに迷惑をかけないように細心の注意をはらっていたが後日SNSで迷惑だったと発信されたことがあったといわれたときに田代さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/07 2:29:36"}, {"id": "M035", "speaker": "田淵智也", "quote": "田淵さん「結構ヤバイのがくる気がする。」", "context": "厄年が近づいてきている時に田淵さんが仰られていた名言", "episode": "", "timestamp": "2025/09/07 2:32:05"}, {"id": "M036", "speaker": "田淵智也", "quote": "田淵さん「再来年来ます、僕には大きな波が」", "context": "厄年が近づいてきている時に田淵さんが仰られていた名言。", "episode": "", "timestamp": "2025/09/07 2:33:12"}, {"id": "M037", "speaker": "デラさん", "quote": "デラさん「期待値を下げておくのがライフハック」", "context": "田淵さんが予め厄年に大きい厄がくることを予言していた時にデラさんが仰られていた名言。", "episode": "", "timestamp": "2025/09/07 3:05:17"}, {"id": "M038", "speaker": "デラさん", "quote": "デラさん「言葉として禁止しているのと、本当の事実から目を反らすのは違う」", "context": "田淵さんがイベントでの飲酒をやめますと宣言した時に、デラさんが仰られていた名言。", "episode": "", "timestamp": "2025/09/07 7:04:39"}, {"id": "M039", "speaker": "田淵智也", "quote": "田淵さん「泥酔キャラ、ピャアピャア言うキャラ」", "context": "田淵さんが昔は酔っぱらって面白いことを言うのが許されていたという時に出てきた名言。", "episode": "", "timestamp": "2025/09/07 7:06:30"}, {"id": "M040", "speaker": "田淵智也", "quote": "田淵さん「田代さんが昔言っていた、1回走って駅に5分で着いたからには5分で着けると思ってしまう。」", "context": "成功体験を表した名言。", "episode": "第1回", "timestamp": "2025/09/07 7:08:13"}, {"id": "M041", "speaker": "田淵智也", "quote": "田淵さん「クリエイティブな目線で決めている。」", "context": "イベントでお酒をやめようと思っているのは、年のせいでのような後ろ向きなことではなくて、クリエイティブな目線で決めたことなんだということを表明した名言。", "episode": "", "timestamp": "2025/09/07 7:22:33"}, {"id": "M042", "speaker": "田淵智也", "quote": "田淵さん「僕がこういう感じでも暖かい目で見守ってほしい。」", "context": "イベントでお酒を飲まないようにしたいと思っている田淵さんが、たっちレディオのリスナーにはお酒を差し入れされても、田淵さんはお酒飲まないんだよと野暮なことは言わずに暖かい目線で見て欲しいという時に出た名言。", "episode": "", "timestamp": "2025/09/07 7:28:28"}, {"id": "M043", "speaker": "田代智一", "quote": "田代さん「重箱の隅をつつくようなアナウンス」", "context": "田淵さんがイベントでお酒を飲まないと思っていることをたっちレディオのリスナーにだけお伝えされた時に仰られていた名言。", "episode": "", "timestamp": "2025/09/07 7:32:19"}, {"id": "M044", "speaker": "田淵智也", "quote": "田淵さん「何故天才は病まないとおもっているんだね。」", "context": "どんな天才だと言われてる人でも病んでしますことはあるという名言。", "episode": "", "timestamp": "2025/09/07 7:35:17"}, {"id": "M045", "speaker": "田淵智也", "quote": "田淵さん「俺も例にもれずそう。」", "context": "田淵さんも天才たちと同じように病んでいる時もあるという名言", "episode": "", "timestamp": "2025/09/07 7:40:36"}, {"id": "M046", "speaker": "デラさん", "quote": "デラさん「言うか言わないかの違いというか、言う場があるかないかの違い。」", "context": "人前に出る人達が気持ちを吐露している時に、そういうことを言う人なのか、言わない人なのかと、そういう場があるかないかの違いだけのことを仰られていた名言。", "episode": "", "timestamp": "2025/09/07 7:48:03"}, {"id": "M047", "speaker": "田淵智也", "quote": "田淵さん「そこまでして人前に出なきゃいかんかね」", "context": "人前に出る仕事をしている人に対しての名言。でも人前に出るのも一定の麻薬性があるからそれもわかるとのこと。", "episode": "", "timestamp": "2025/09/07 7:52:15"}, {"id": "M048", "speaker": "デラさん", "quote": "デラさん「吐露することに癒しの効果があるんじゃないかという期待」", "context": "人前で自分の気持ちを吐露することが、吐き出すという気持ち良さと、共感してもらえることでおこる癒しの効果もあるんじゃないかという期待しているという名言", "episode": "", "timestamp": "2025/09/07 7:57:58"}, {"id": "M049", "speaker": "田淵智也", "quote": "田淵さん「言いたいよねみんな」", "context": "人前に出る仕事の人が自分の気持ちを我慢して、我慢してやっと言えて楽になっていることを同意の目、同情の目で仰られていた名言。", "episode": "", "timestamp": "2025/09/07 8:02:05"}, {"id": "M050", "speaker": "田代智一", "quote": "田代さん「小説家の断筆宣言だよね」", "context": "人前に出る人が世間に対して、俺辞めますとお気持ちを表明していて、こちらとしてはお好きにどうぞ。という感じで出た名言。", "episode": "", "timestamp": "2025/09/07 8:06:46"}, {"id": "M051", "speaker": "田淵智也", "quote": "田淵さん「変わらない方がいいよね外圧」", "context": "世間の人から発せられている、変わらないでくれという気持ちを外圧に例えて仰られていた名言。", "episode": "", "timestamp": "2025/09/07 8:13:18"}, {"id": "M052", "speaker": "田淵智也", "quote": "田淵さん「事実に直面したくない。エンタメなので。」", "context": "世間の人が思っているであろうエンタメなんだから事実に直面させないでくれという気持ちを表した名言。", "episode": "", "timestamp": "2025/09/07 8:17:03"}, {"id": "M053", "speaker": "田代智一", "quote": "田代さん「60歳で屋根の上を走るか、60歳の役を甘んじて受け入れるかは選べる。」", "context": "トム・クルーズみたいに年をとっても変わらずにいるか、リーアム・ニーソンやダニエル・クレイグみたいに年相応になっていくかという選択は選べるということを表した名言。", "episode": "", "timestamp": "2025/09/07 8:23:30"}, {"id": "M054", "speaker": "田淵智也", "quote": "田淵さん「ギラギラしている人はギラギラしている。ずっと。」", "context": "トム・クルーズみたいにギンギラしている人はずっとギラギラしていることを表した名言。", "episode": "", "timestamp": "2025/09/07 8:27:46"}, {"id": "M055", "speaker": "デラさん", "quote": "デラさん「恐怖は頭で納得出来ない。感情のものだから。」", "context": "変化することは恐怖であるのだが感情のものなので、頭では理解できないことを表した名言。", "episode": "", "timestamp": "2025/09/07 8:45:10"}, {"id": "M056", "speaker": "田淵智也", "quote": "田淵さん「これはこれでいっかには時間が必要。」", "context": "変化に気付きはじめてから、頭で理解するには時間がかかることを表した名言", "episode": "", "timestamp": "2025/09/07 8:49:00"}, {"id": "M057", "speaker": "田代智一", "quote": "田代さん「海外は普通に美味かったら5、日本だと普通に美味しかったら3.2。日本人の感覚、頭狂ってない。」", "context": "海外と日本の評価の違いに言及された名言", "episode": "", "timestamp": "2025/09/07 9:00:21"}, {"id": "M058", "speaker": "田淵智也", "quote": "田淵さん「普通に良かったら5でよくない。」", "context": "普通の評価が低すぎる日本の評価の仕方に対する名言。", "episode": "", "timestamp": "2025/09/07 9:02:31"}, {"id": "M059", "speaker": "田淵智也", "quote": "田淵さん「ステルス値上げが普通にキモい」", "context": "ステルス値上げをすることに対して苦言を呈する名言。", "episode": "", "timestamp": "2025/09/07 9:04:45"}, {"id": "M060", "speaker": "田淵智也", "quote": "田淵さん「社員の幸せを守れないんですわ。って言うのが社長の務めじゃねぇのかよ」", "context": "値上げをする時の理由として、社長に言って欲しいことを表した名言", "episode": "", "timestamp": "2025/09/07 9:11:47"}, {"id": "M061", "speaker": "田代智一", "quote": "田代さん「金に関するヘイトって日本人本当に強いよね」", "context": "日本人はお金の話が出ると神経質になることを表した名言", "episode": "", "timestamp": "2025/09/07 9:13:35"}, {"id": "M062", "speaker": "デラさん", "quote": "デラさん「人間って階層でしか物事を見れない」", "context": "言語は階層構造になっていて、人間は言語で世界を認識しているのであらゆる物を階層構造で見ていることを表した名言", "episode": "", "timestamp": "2025/09/07 9:18:02"}, {"id": "M063", "speaker": "デラさん", "quote": "デラさん「人間は頑張らないのがデフォ」", "context": "人間は階層でしか物事を見れないという話の続きからその階層から外れた人や事や物は見なかったことにする構造から出た名言。", "episode": "", "timestamp": "2025/09/07 9:22:07"}, {"id": "M064", "speaker": "デラさん", "quote": "デラさん「SNSやってもいいけど指で触らない。指は便利すぎるから」", "context": "スマホを殺すを目標にした田淵さんに対して、デラさんが仰られた名言。", "episode": "", "timestamp": "2025/09/07 9:24:57"}, {"id": "M065", "speaker": "田淵智也", "quote": "田淵さん「人類が産み出してしまった害悪」", "context": "スマホを殺すを目標にした田淵さんが、スマホに対して仰られていた名言。", "episode": "", "timestamp": "2025/09/07 9:26:30"}, {"id": "M066", "speaker": "田代智一", "quote": "田代さん「自分には頑張らないという選択肢がない。どうせ人は死ぬから、一度きりしかない人生、頑張る人生か頑張らない人生かなら結果はどうであれ頑張る人生が良い。どうしても頑張れない時は病院に行く。」", "context": "大忘年会2024で田代さんが仰られていた名言。イベントの最後にふさわしいとても良い名言だなと思い、とても胸に響き、私も頑張る人生にしようと思いました。", "episode": "忘年会", "timestamp": "2025/09/07 19:42:45"}, {"id": "M067", "speaker": "田淵智也", "quote": "田淵さん「そのテンションが上がってる様子を一言で見せてください。」", "context": "第1回放送でテンションが上がってる田淵さんが仰られていた名言。", "episode": "第1回", "timestamp": "2025/09/08 2:38:35"}, {"id": "M068", "speaker": "田代智一", "quote": "田代さん「無茶振りだな～。いきなりきたか。」", "context": "第1回放送で田淵さんのテンションが上がって田代さんに無茶振りをした時に田代さんが仰られていた名言", "episode": "第1回", "timestamp": "2025/09/08 2:41:31"}, {"id": "M069", "speaker": "田代智一", "quote": "田代さん「田淵君って今いくつだっけ。15歳だっけ。」", "context": "第1回放送でテンションが高い田淵さんに対して田代さんが仰られた名言", "episode": "第1回", "timestamp": "2025/09/08 2:43:41"}, {"id": "M070", "speaker": "田淵智也", "quote": "田淵さん「閉塞感を打破する。」", "context": "第1回放送で初めてエコーがかかった名言。なぜたっちレディオが始まったのかのコンセプトが発表された。", "episode": "第1回", "timestamp": "2025/09/08 2:45:30"}, {"id": "M071", "speaker": "田代智一", "quote": "田代さん「しゃっそくその話をしましょう(早速その話をしましょう)」", "context": "第1回放送で田淵さんのテンションに押されて初めて言葉を噛んだ名言。", "episode": "第1回", "timestamp": "2025/09/08 2:47:56"}, {"id": "M072", "speaker": "田代智一", "quote": "田代さん「改めましてこんばんは、あれ、こんにちはだっけ？」", "context": "第1回放送で田代さんが仰られていた冒頭の挨拶。最初なのでまだ挨拶が決まっていない。もしかして「桜のあと」の歌詞ってここからきてるんですかね？", "episode": "第1回", "timestamp": "2025/09/08 3:01:34"}, {"id": "M073", "speaker": "田代智一", "quote": "田代さん「アンジェリーナ・不条理」", "context": "初期の頃にあったネタコーナー", "episode": "", "timestamp": "2025/09/08 3:13:44"}, {"id": "M074", "speaker": "田代智一", "quote": "田代さん「良い意味でベタ」", "context": "第1回放送で田淵さんの作曲されたエンディングテーマに対して田代さんが仰られていた名言。", "episode": "第1回", "timestamp": "2025/09/08 3:23:00"}, {"id": "M075", "speaker": "田淵智也", "quote": "田淵さん「鳴らないポケベルですよ。」", "context": "第2回放送で自分は友達がいないことを仰られていた名言。", "episode": "第2回", "timestamp": "2025/09/08 3:28:36"}, {"id": "M076", "speaker": "田淵智也", "quote": "田淵さん「あなたの閉塞感を打破タッチ」", "context": "第2回放送で初めて番組のキャッチコピーを発表した時にエコーがかかった名言", "episode": "第2回", "timestamp": "2025/09/08 3:32:52"}, {"id": "M077", "speaker": "田淵智也", "quote": "田淵さん「チクショウ～こいつ論理的になりやがって！」", "context": "第2回の放送で田淵さんが作った言葉「打破タッチ！」を披露したが、田代さんから打破の突き破るとタッチの触れるという言葉で破り触れるのは見づらいということに対して田淵さんが仰られた名言", "episode": "第2回", "timestamp": "2025/09/08 3:39:24"}, {"id": "M078", "speaker": "田淵智也", "quote": "田淵さん「剣道でいう所の面を討ちたい」", "context": "第2回放送でドラえもんは卒業してると仰られていた田代さんやそういう方たちに対して仰られた名言", "episode": "第2回", "timestamp": "2025/09/08 3:42:34"}, {"id": "M079", "speaker": "田淵智也", "quote": "田淵さん「ラジオの収録そっちのけでTUTAYAですよ。」", "context": "第2回の放送で田淵さんがドラえもんの魅力を語る時に出た名言", "episode": "第2回", "timestamp": "2025/09/08 3:50:21"}, {"id": "M080", "speaker": "田淵智也", "quote": "田淵さん「SかMかは言ったもん勝ち」", "context": "第2回の放送でかさぶたを剥くのはSかMなのかは永遠に決まらないという話からでた名言", "episode": "第2回", "timestamp": "2025/09/08 10:58:10"}, {"id": "M081", "speaker": "田淵智也", "quote": "田淵さん「じゃあ23回メールが採用されたら3人で踏みにいきましょう。」", "context": "第2回の放送で「ドMもん」のコーナーに踏まれたいというメールが採用された時に田淵さんが仰られていた名言", "episode": "第2回", "timestamp": "2025/09/08 11:02:32"}, {"id": "M082", "speaker": "田淵智也", "quote": "田淵さん「日本は不条理とドMでできている」", "context": "第2回放送で「アンジェリーナ・不条理」と「みんな大好きドMもん」のコーナー募集をした時に仰られた名言。", "episode": "第2回", "timestamp": "2025/09/08 11:05:15"}, {"id": "M083", "speaker": "田淵智也", "quote": "田淵さん「田淵サーモン智也です。」", "context": "第3回放送で、田代さんといっせいのせで好きな寿司のネタを言うという流れになったときに田代さんが「鯖」田淵さんが「サーモン」といい揃わなかった後の田淵さんの挨拶で出た名言", "episode": "第3回", "timestamp": "2025/09/08 11:22:51"}, {"id": "M084", "speaker": "田淵智也", "quote": "田淵さん「あなたの閉塞感いただきま～す」", "context": "第3回放送で、打破タッチ！がまだしっくりきてなかった時にでた候補の名言", "episode": "第3回", "timestamp": "2025/09/08 11:25:46"}, {"id": "M085", "speaker": "田代智一", "quote": "田代さん「本当に今閉塞している人は飛び出してしまった方がいい」", "context": "第3回放送で田代さんの留学経験から仰られた名言", "episode": "第3回", "timestamp": "2025/09/08 11:31:55"}, {"id": "M086", "speaker": "田淵智也", "quote": "田淵さん「日本出不精」", "context": "第3回放送で飛行機が苦手で海外旅行ができない田淵さんが仰られていた名言。", "episode": "第3回", "timestamp": "2025/09/08 11:39:39"}, {"id": "M087", "speaker": "田代智一", "quote": "田代さん「スルーしてるんじゃなくて受け止めてる。」", "context": "第4回放送で、ボケる田淵さんに対して仰られていた名言", "episode": "第4回", "timestamp": "2025/09/08 11:52:01"}, {"id": "M088", "speaker": "田淵智也", "quote": "田淵さん「5年、10年後に聞き返して恥ずかしくないラジオ作りをしていきたい。」", "context": "第4回の放送で第1回目の放送を聞いた田淵さんの感想名言", "episode": "第4回", "timestamp": "2025/09/08 12:29:44"}, {"id": "M089", "speaker": "田淵智也", "quote": "田淵さん「飲み込まないでよ～」", "context": "第4回の放送で田代さんが田淵さんのボケを受け止めた時に出た名言。", "episode": "第4回", "timestamp": "2025/09/08 12:34:33"}, {"id": "M090", "speaker": "田淵智也", "quote": "田淵さん「雨が降る。それでもお前に風が吹く。」", "context": "第4回放送で、パーソナリティー力を審査するために、曲紹介の例として仰られた名言。", "episode": "第4回", "timestamp": "2025/09/08 12:36:57"}, {"id": "M091", "speaker": "田代智一", "quote": "田代さん「涙で濡れた枕カバーも、洗ってしまえばダウニーのいい香り。明日も元気にあいつをぶん殴ろう。」", "context": "第4回放送で、ラジオパーソナリティーとして曲紹介をする練習で仰られていた名言。紹介された曲はロッキーのテーマ曲", "episode": "第4回", "timestamp": "2025/09/08 12:45:59"}, {"id": "M092", "speaker": "田淵智也", "quote": "田淵さん「SOS団の6人目のメンバーとして踊って五月病をぶっ飛ばす」", "context": "第4回放送で、ラジオパーソナリティーの曲紹介の練習で「ハレ晴レユカイ」を紹介した時に仰られていた名言", "episode": "第4回", "timestamp": "2025/09/08 12:51:18"}, {"id": "M093", "speaker": "田代智一", "quote": "田代さん「あれ、自由業なのに自由じゃないな～」」", "context": "第4回の放送で、オープニングトークの練習中に石ころを蹴ったり、木に登ったり、何かをしたら不審者になってしまうことについてトークをした後に締めに仰られていた名言", "episode": "第4回", "timestamp": "2025/09/08 12:56:51"}, {"id": "M094", "speaker": "田淵智也", "quote": "田淵さん「21世紀のツンデレミュージシャンとして頑張ってきた。」", "context": "第4回放送で、ラジオスキルを検証する企画で田淵さんがツンデレすぎた時に仰られていた名言", "episode": "第4回", "timestamp": "2025/09/08 13:01:03"}, {"id": "M095", "speaker": "田淵智也", "quote": "田淵さん「今の俺の解釈面白くないですか？」", "context": "第5回放送で田淵さんが絵画を見たときに仰られていた名言", "episode": "第5回", "timestamp": "2025/09/11 3:42:19"}, {"id": "M096", "speaker": "田代智一", "quote": "田代さん「抵抗を示さないで、行ってみると面白いよ。」", "context": "第5回放送で美術館に行くことをおすすめするために仰られていた名言。", "episode": "第5回", "timestamp": "2025/09/11 3:47:08"}, {"id": "M097", "speaker": "田代智一", "quote": "田代さん「要するにギャグマンガなんだよね。」", "context": "第5回放送で、シュルレアリスムを一言で表した時に仰られていた名言。", "episode": "第5回", "timestamp": "2025/09/11 3:50:57"}, {"id": "M098", "speaker": "田淵智也", "quote": "田淵さん「僕が仲良くなる人は孤独な人なんですよ。」", "context": "第7回放送でラジオ好きな人が自分の周りにいるがみんな孤独な人だということを仰られていた名言。", "episode": "第7回", "timestamp": "2025/09/11 3:54:56"}, {"id": "M099", "speaker": "田淵智也", "quote": "田淵さん「デラさんから闇のアドバイス」", "context": "第8回放送で業界の裏話をしてる時に仰られていた名言。", "episode": "第8回", "timestamp": "2025/09/11 4:02:56"}, {"id": "M100", "speaker": "田代智一", "quote": "田代さん「すごいね、性格も声もトゲトゲなんだね。」", "context": "第8回放送で、前半に毒舌発言があったり、声質がトゲトゲされてた田淵さんに仰られていた名言。", "episode": "第8回", "timestamp": "2025/09/11 4:10:19"}, {"id": "M101", "speaker": "田淵智也", "quote": "田淵さん「人と友達になるのはハプニング」", "context": "第15回放送で、友達の作り方について話していた時に仰られていた名言。", "episode": "第15回", "timestamp": "2025/09/14 13:21:42"}, {"id": "M102", "speaker": "デラさん", "quote": "デラさん「体験を買ってほしい」", "context": "第18回放送で、田代さんにクロスバイクを勧める時に仰られていた名言", "episode": "第18回", "timestamp": "2025/09/21 0:22:07"}, {"id": "M103", "speaker": "田淵智也", "quote": "田淵さん「ネットは井戸端会議の延長」", "context": "第19回の放送でSNSの発言が問題になった事件で仰られていた名言", "episode": "第19回", "timestamp": "2025/09/21 1:14:24"}, {"id": "M104", "speaker": "田代智一 / 田淵智也", "quote": "田代さん、田淵さん「他の人がやってないからやらなきゃ」", "context": "第21回放送で、なぜ音楽をやっているのかを聞かれて仰られていた名言", "episode": "第21回", "timestamp": "2025/09/21 8:05:32"}, {"id": "M105", "speaker": "田淵智也", "quote": "田淵さん「スランプ1回もない」", "context": "第21回放送で、田代さんにスランプがないか聞かれた時に仰られていた名言", "episode": "第21回", "timestamp": "2025/09/21 8:08:20"}, {"id": "M106", "speaker": "田淵智也", "quote": "田淵さん「わかられたい、認められたい、かっぱえびせん」", "context": "第21回放送でなぜ曲を作るのかの議論で曲を作る人は寂しい人という話しから出た名言", "episode": "第21回", "timestamp": "2025/09/21 8:10:12"}, {"id": "M107", "speaker": "田代智一", "quote": "田代さん「やっぱりミュージシャン、音で会話しようぜ」", "context": "第26回放送で、フェス会場で会話ができない田淵さんに仰られていた名言", "episode": "第26回", "timestamp": "2025/09/26 5:48:28"}, {"id": "M108", "speaker": "田代智一", "quote": "田代さん「先輩ノブオブですね！(ノーブレス・オブリージュ)」", "context": "第26回放送のたっちディクショナリーで出た名言", "episode": "第26回", "timestamp": "2025/09/26 5:50:17"}, {"id": "M109", "speaker": "田代智一", "quote": "田代さん「ハリウッド通の俺から言わしてもらうと」", "context": "第29回放送で、ハリウッド映画がお好きな田代さんが仰られていた名言", "episode": "第29回", "timestamp": "2025/09/26 5:53:24"}, {"id": "M110", "speaker": "その他・未分類", "quote": "60点を毎日やってみる", "context": "キャパを超える目標に向かって走っても続かないから、これくらいならできるかもをやってみる。", "episode": "", "timestamp": "2025/09/27 22:56:00"}, {"id": "M111", "speaker": "その他・未分類", "quote": "お得意のスマホ", "context": "まだ田淵さんがガラケーだった頃かスマホにしたばかりの頃か覚えていないのですが、何かを調べる時にすぐスマホを使うのを「お得意のスマホで」と田淵さんが仰っていたような気がします、ふふっとなりとても好きです", "episode": "", "timestamp": "2025/09/28 11:19:46"}, {"id": "M112", "speaker": "田淵智也", "quote": "田淵さん「僕ぐらいの人間になるとガムをあげたい人は1人くらいしかいないんで、まぁ田代さんですけど」", "context": "第30回放送で、親切にする話しで仰られていた名言", "episode": "第30回", "timestamp": "2025/09/28 11:24:17"}, {"id": "M113", "speaker": "田代智一", "quote": "田代さん「ベストタイムは奇跡のタイム」", "context": "第32回放送で、飲み会に遅刻した田淵さんに仰られていた名言", "episode": "第32回", "timestamp": "2025/09/28 11:26:36"}, {"id": "M114", "speaker": "デラさん", "quote": "デラさん「わかってなさを面白がる」", "context": "第500回放送で映画「TENETテネット」についての話題で仰られていた名言", "episode": "第500回", "timestamp": "2025/09/29 10:14:52"}, {"id": "M115", "speaker": "田淵智也", "quote": "田淵さん「なるほど、面白い、その考えもあるよね」", "context": "第500回放送で写真を撮る、撮らないの話題からお互いの言い分を認めるから出た名言", "episode": "第500回", "timestamp": "2025/09/29 10:19:26"}, {"id": "M116", "speaker": "田代智一", "quote": "田代さん「一番大切なものを決めない」", "context": "第34回放送で、リスナーから一番大切にしてるものはなんですか？という質問で、いつ何が大切になるかわからないからあえて決めないという話しから出た名言", "episode": "第34回", "timestamp": "2025/09/29 10:22:59"}, {"id": "M117", "speaker": "田代智一", "quote": "田代さん「バタフライ理論で幸せになっている人がいるはず」", "context": "第36回放送で、年末になりたっちレディオも長くやってきて救われた人もいるはずという話しから出た名言", "episode": "第36回", "timestamp": "2025/09/29 10:26:04"}, {"id": "M118", "speaker": "田淵智也", "quote": "田淵さん「俗の低い飲み会」", "context": "第36回放送で、田代さんがラジオでの立ち位置を考えていた時にそのリアクションは俗の低い飲み会のノリですよの時に出た名言", "episode": "第36回", "timestamp": "2025/09/29 10:29:28"}, {"id": "M119", "speaker": "デラさん", "quote": "デラさん「課題が多い人がうらやましい」", "context": "第36回放送で、デラさんがゴールを決めれば何でも出来るという話しから他の人をみてまだこんなに改善できる課題があってうらやましいという話しから出た名言", "episode": "第36回", "timestamp": "2025/09/29 10:32:33"}, {"id": "M120", "speaker": "田代智一", "quote": "田代さん「元祖は旨い意味じゃない」", "context": "第35回放送で元祖より派生店の料理の方が旨いという話しから出た名言", "episode": "第35回", "timestamp": "2025/09/29 10:35:09"}, {"id": "M121", "speaker": "田代智一", "quote": "田代さん「未来の自分をかけてはダメだよ」", "context": "第35回放送で、お願いギブアンドテイクで未来の自分を犠牲にしてはダメという話しから出た名言", "episode": "第35回", "timestamp": "2025/09/29 10:37:33"}, {"id": "M122", "speaker": "田代智一", "quote": "田代さん「親しき仲にも礼儀あれ」", "context": "第39回放送で、リスナーの方から人見知りでなかなか仲良くなれないという話しから仰られていた名言", "episode": "第39回", "timestamp": "2025/10/02 8:34:04"}, {"id": "M123", "speaker": "田淵智也", "quote": "田淵さん「頭良くなるラジオみたいじゃない？」", "context": "第39回放送で、ドMもんに送られてきたメールが意味深なメールですごい推測をされていた時に仰られていた名言", "episode": "第39回", "timestamp": "2025/10/02 8:38:12"}, {"id": "M124", "speaker": "田代智一 / 田淵智也", "quote": "田代さん、田淵さん「言葉の賞味期限。言葉って鮮度がある。」", "context": "第41回放送で、言葉愛好家のお二人が仰られていた名言", "episode": "第41回", "timestamp": "2025/10/02 8:59:30"}, {"id": "M125", "speaker": "畑亜貴", "quote": "畑さん『軽いことこそ真剣に』", "context": "第43回放送で、なんてこった林檎を作詞した時に仰られていた名言", "episode": "第43回", "timestamp": "2025/10/02 9:02:04"}, {"id": "M126", "speaker": "畑亜貴", "quote": "畑さん『１２０%以上出さないと私は失敗だと思ってるんで』", "context": "第43回放送で、畑さんの仕事に対する話しで仰られていた名言", "episode": "第43回", "timestamp": "2025/10/02 9:03:34"}, {"id": "M127", "speaker": "田代智一", "quote": "田代さんの「その正義は本当に正義なのか」", "context": "お父さんが浮気してるのを暴くかいなか的なお話だったと思います。", "episode": "", "timestamp": "2025/10/04 7:27:17"}, {"id": "M128", "speaker": "徳永憲", "quote": "徳永さん『かませいぬでもチャンスはチャンス』", "context": "第49回放送で、徳永さんがデキレースのオーディションに参加するときのモチベーションで仰られていた名言", "episode": "第49回", "timestamp": "2025/10/18 10:48:10"}, {"id": "M129", "speaker": "田淵智也", "quote": "田淵さん「上手い人のミスは可愛い」", "context": "第55回放送で、眉毛の書き方が普段と違う人がいてキュンとした話で田淵さんが仰られていた名言", "episode": "第55回", "timestamp": "2025/10/18 10:50:51"}, {"id": "M130", "speaker": "田淵智也", "quote": "田淵さん「他の人がやってるなら俺やらなくてよくない？」", "context": "第57回放送で、桜ソングが多すぎるという話から仰られていた名言", "episode": "第57回", "timestamp": "2025/10/19 2:02:20"}, {"id": "M131", "speaker": "田淵智也", "quote": "田淵さん「回復するにはリハビリがいる。」", "context": "第685回の放送で、忙しい田淵さんが仰られていた名言", "episode": "第685回", "timestamp": "2025/10/20 1:33:51"}, {"id": "M132", "speaker": "田代智一", "quote": "田代さん「すごいバッターでも3割しか打てない。3割でよくない？」", "context": "第685回の放送で、完璧主義な田淵さんに仰られていた名言", "episode": "第685回", "timestamp": "2025/10/20 1:36:02"}, {"id": "M133", "speaker": "田淵智也", "quote": "田淵さん「Xのおすすめは見ない方がいい」", "context": "第685回放送で、鬱ぎみだった田淵さんが仰られていた名言", "episode": "第685回", "timestamp": "2025/10/20 1:37:43"}, {"id": "M134", "speaker": "その他・未分類", "quote": "動かない人生より、動く人生や!!!!!!!!!", "context": "第709回の冒頭です。田淵さんがメールを送信する場面のお話。", "episode": "第709回", "timestamp": "2025/10/21 10:58:09"}, {"id": "M135", "speaker": "田代智一", "quote": "田代さん「自分に課題を課すんじゃなくて、まず楽しいことから始める」", "context": "第62回放送で、3日坊主に悩んでいるリスナーの方に仰られていた名言。", "episode": "第62回", "timestamp": "2025/10/24 23:14:27"}, {"id": "M136", "speaker": "田淵智也", "quote": "田淵さん「俺、脇役になりたい」", "context": "第64回放送で、出しゃばりたくないけど空気的に出しゃばってしまうことが悩みという話で仰られていた名言", "episode": "第64回", "timestamp": "2025/10/25 0:16:01"}, {"id": "M137", "speaker": "田代智一", "quote": "田代さん「仕事の電話だって言って、その場から立ち去る。」", "context": "第64回の放送で、飲み会での沈黙が怖い田淵さんにアドバイスした名言。", "episode": "第64回", "timestamp": "2025/10/25 0:25:22"}, {"id": "M138", "speaker": "デラさん", "quote": "デラさん「顔だけで相づちをうつ」", "context": "第64回の放送で、声が出る相づちをたくさんしてしまう田淵さんに対してデラさんが仰られていたアドバイス名言", "episode": "第64回", "timestamp": "2025/10/25 0:38:20"}, {"id": "M139", "speaker": "田代智一", "quote": "田代さん「気楽に地球を救えるのが良い。」", "context": "第65回の放送で、エコのアイデアの話がたくさんでたときに、義務とか努力じゃなくて楽しくエコ活動できたらいいよねという話のまとめで仰られていた名言。", "episode": "第65回", "timestamp": "2025/10/25 1:52:08"}, {"id": "M140", "speaker": "田淵智也", "quote": "田淵さん「そんなにお前に興味ねぇ」", "context": "第76回放送で、会議などで緊張してしまうというリスナーの悩みに答えられていた名言", "episode": "第76回", "timestamp": "2025/10/25 22:48:33"}, {"id": "M141", "speaker": "田代智一", "quote": "田代さん「それは事実として通りすぎよう」", "context": "第76回放送で、会議で緊張してしまうリスナーの方に答えられていた名言", "episode": "第76回", "timestamp": "2025/10/25 22:50:47"}, {"id": "M142", "speaker": "田代智一", "quote": "田代さん「閉塞感を打破するには起爆剤が必要」", "context": "第76回放送で、会議に女性がいると緊張してしまうリスナーに対して、趣味のサークルやクラブにいってみるなどのアイデアのときに仰られていた名言", "episode": "第76回", "timestamp": "2025/10/25 22:59:26"}, {"id": "M143", "speaker": "田淵智也", "quote": "田淵さん「オニ連しかない」", "context": "第552回放送で、ドラムをやっているがこれから先何を頑張ったらいいかというリスナーからの質問に答えられた名言", "episode": "第552回", "timestamp": "2025/10/27 5:47:46"}, {"id": "M144", "speaker": "田淵智也", "quote": "田淵さん「何者でもない時は何でもやるしかない」", "context": "第552回放送で、ドラムをやっているリスナーからどうすれば音楽を仕事にできるかという質問に対して答えられていた名言", "episode": "第552回", "timestamp": "2025/10/27 5:49:18"}, {"id": "M145", "speaker": "田淵智也", "quote": "田淵さん「ケバブどこで食ってもうまい」", "context": "第613回の放送で、デラさんが帰国されていてオススメのお店を話していたときに仰られていた名言", "episode": "第613回", "timestamp": "2025/10/29 8:11:01"}, {"id": "M146", "speaker": "田淵智也", "quote": "田淵さん「世の中を良くする」", "context": "第613回の放送で、2023年の目標で仰られていた名言", "episode": "第613回", "timestamp": "2025/10/29 8:12:18"}, {"id": "M147", "speaker": "田淵智也", "quote": "田淵さん「質問するやつはえらい」", "context": "第537回の放送で、たっちレディオのイベントで質問できなかったリスナーの方に仰られていた名言", "episode": "第537回", "timestamp": "2025/10/29 8:13:53"}, {"id": "M148", "speaker": "田代智一", "quote": "田代さん「1人サファリパークはきつい」", "context": "第78回放送で、世の中で一番きつい1人～は何かという話になって仰られていた名言", "episode": "第78回", "timestamp": "2025/10/29 8:31:31"}, {"id": "M149", "speaker": "田淵智也", "quote": "田淵さん「寿司でも時事ネタでも旬が大事」", "context": "第79回放送で、時事ネタ回を話すときに仰られていた名言", "episode": "第79回", "timestamp": "2025/10/29 8:56:57"}, {"id": "M150", "speaker": "田淵智也", "quote": "田淵さん「外野だまってろ」", "context": "第79回放送で、漫画家のアシスタントがブラックだという話から仰られていた名言", "episode": "第79回", "timestamp": "2025/10/29 9:15:55"}, {"id": "M151", "speaker": "田淵智也", "quote": "田淵さん「謙虚な姿勢で日々を生きてる」", "context": "第80回放送で、前回の放送で田淵さんが喋りすぎてるということを気にしているときに仰られていた名言", "episode": "第80回", "timestamp": "2025/10/29 9:35:15"}, {"id": "M152", "speaker": "田淵智也", "quote": "田淵さん「心を込めることを諦めてはいけない」", "context": "第737回の放送で、転職しようか迷っているリスナーに仰られていた名言", "episode": "第737回", "timestamp": "2025/10/31 6:15:34"}, {"id": "M153", "speaker": "田淵智也", "quote": "田淵さん「やった方が人生はおもろい」", "context": "第687回の放送で、仮面浪人をオススメしたデラさんの案に対して仰られていた名言", "episode": "第687回", "timestamp": "2025/11/01 21:08:33"}, {"id": "M154", "speaker": "田代智一", "quote": "田代さん「星1レビューつけるしかない」", "context": "第687回の放送で、旅行先の飲食店に男女2人で行ったが男性客の方だけ大盛だったという閉塞感に仰られていた名言", "episode": "第687回", "timestamp": "2025/11/01 21:15:33"}, {"id": "M155", "speaker": "田淵智也", "quote": "田淵さん「砂糖と人工甘味料は普通にダメ」", "context": "第687回放送で、肌荒れに悩んでいた田淵さんがお医者さんに言われた名言", "episode": "第687回", "timestamp": "2025/11/01 21:23:02"}, {"id": "M156", "speaker": "田淵智也", "quote": "田淵さん「カウンセリングに行く」", "context": "第687回の放送で、美容にお金をかけすぎてしまうのではないかというリスナーの不安に仰られていた名言", "episode": "第687回", "timestamp": "2025/11/01 21:50:34"}, {"id": "M157", "speaker": "田代智一", "quote": "田代さん「生ものだからしょうがないじゃん」", "context": "第83回の放送で、ギターの発表でミスをしてしまったリスナーに仰られていた名言", "episode": "第83回", "timestamp": "2025/11/05 4:58:17"}, {"id": "M158", "speaker": "田淵智也", "quote": "田淵さん「世の中って思ったより場あたり」", "context": "第83回放送で、ギターを続けるか絵の道に進むか迷っていたリスナーに仰られていた名言", "episode": "第83回", "timestamp": "2025/11/05 5:00:23"}, {"id": "M159", "speaker": "田淵智也", "quote": "田淵さん「楽しくないならやらなきゃいい」", "context": "第83回の放送で、ギターを続けるか、絵の道に進むかで迷っているリスナーに仰られていた名言", "episode": "第83回", "timestamp": "2025/11/05 5:03:40"}, {"id": "M160", "speaker": "田淵智也", "quote": "田淵さん「思わぬところで潰しがきく」", "context": "第83回の放送で、ギターを続けるか、絵の道に進むかで迷っていたリスナーに仰られていた名言", "episode": "第83回", "timestamp": "2025/11/05 5:06:21"}, {"id": "M161", "speaker": "田淵智也", "quote": "田淵さん「誰が言ってるか問題」", "context": "第681回放送で、芸能人の結婚しましたという投稿にコメントすることに対する名言", "episode": "第681回", "timestamp": "2025/11/05 5:10:15"}, {"id": "M162", "speaker": "田淵智也", "quote": "田淵さん「みんなが見えるところでやんなくてよくね」", "context": "第681回の放送で、芸能人の結婚しましたの投稿にコメントすることに対する名言", "episode": "第681回", "timestamp": "2025/11/05 5:12:16"}, {"id": "M163", "speaker": "田淵智也", "quote": "田淵さん「手紙を書けよ」", "context": "第681回の放送で、芸能人の結婚しましたという投稿にコメントすることに対する名言", "episode": "第681回", "timestamp": "2025/11/05 5:13:43"}, {"id": "M164", "speaker": "田淵智也", "quote": "田淵さん「なんとかなるんじゃん精神」", "context": "第688回放送で、SNSで子どもを産むことに否定的な意見が多いことに閉塞感を抱えているリスナーの方に仰られていた名言", "episode": "第688回", "timestamp": "2025/11/07 10:45:12"}, {"id": "M165", "speaker": "田代智一", "quote": "田代さん「余計なこと考えず、自分の人生やった方がいい。」", "context": "第688回で、SNSで子どもを産むことに否定的な意見が多いことに悩んでいるリスナーの方に仰られていた名言", "episode": "第688回", "timestamp": "2025/11/07 10:47:10"}, {"id": "M166", "speaker": "その他・未分類", "quote": "「調べすぎずに、自分のことだけに集中。自分のことだけに構った方がいい」", "context": "673回、パワハラで休職するリスナーさんに対して。心療内科の口コミが地獄。適応障害にも、ライトな人もヘビーな人もいる。の流れで、田代さんの名言。", "episode": "第673回", "timestamp": "2025/11/07 20:59:46"}, {"id": "M167", "speaker": "その他・未分類", "quote": "「休んではいけないという同調圧力に負けずに休め」", "context": "673回で、適応障害で休職するリスナーに対する田淵さんの名言。30分くらい。", "episode": "第673回", "timestamp": "2025/11/07 21:13:17"}, {"id": "M168", "speaker": "田代智一", "quote": "田代さん「マッチョにならなくてもいい」", "context": "第677回の放送で、インターネットだと強くなれみたいな意見が多いが弱くてもいいということを仰られていた名言", "episode": "第677回", "timestamp": "2025/11/08 22:52:40"}, {"id": "M169", "speaker": "田淵智也", "quote": "田淵さん「孤独じゃなければ人は死なない」", "context": "第677回の放送で、死にたいと思っているリスナーに対して仰られていた名言", "episode": "第677回", "timestamp": "2025/11/08 22:53:53"}, {"id": "M170", "speaker": "田代智一", "quote": "田代さん「あなたが忙しいように私も忙しいんです」", "context": "第93回の放送で、断ることが苦手なリスナーの方に断り方を仰られていた名言", "episode": "第93回", "timestamp": "2025/11/10 16:52:13"}, {"id": "M171", "speaker": "田代智一", "quote": "田代さん「言い訳をしないでサックリ断る」", "context": "第93回放送で、断ることが苦手なリスナーの方に断る時は理由を伝えずに断る方が良いということで仰られていた名言", "episode": "第93回", "timestamp": "2025/11/10 16:54:10"}, {"id": "M172", "speaker": "田代智一", "quote": "田代さん「自分に向いてるリア充を探す」", "context": "第93回の放送で、積極的になってリア充を目指すというリスナーの方に、リア充だから積極的になる必要はないということを仰られていた名言", "episode": "第93回", "timestamp": "2025/11/10 16:56:13"}, {"id": "M173", "speaker": "田淵智也", "quote": "田淵さん「人を信頼して投げる」", "context": "第93回の放送で、デラさんの目標が人に任せるという目標の時に仰られていた名言", "episode": "第93回", "timestamp": "2025/11/10 16:57:56"}, {"id": "M174", "speaker": "田淵智也", "quote": "田淵さん「スイッチ入れればなんとかいける。」", "context": "第649回の放送で、グミ協会のイベントに参加した時に周りがキラキラしていて馴染みにくかった時に仰られていた名言", "episode": "第649回", "timestamp": "2025/11/12 1:19:23"}, {"id": "M175", "speaker": "田淵智也", "quote": "田淵さん「風邪引かないのは本当に大事」", "context": "第649回の放送で、副鼻腔炎になった田淵さんが仰られていた名言", "episode": "第649回", "timestamp": "2025/11/12 1:20:38"}, {"id": "M176", "speaker": "田淵智也", "quote": "田淵さん「可愛いって言っていいんだ」", "context": "第649回の放送で、田淵さんが以前の自分は可愛いっていう言葉をいうのに渋っていたが周りの人達が使い始めたので自分も使っていいんだという時に仰られていた名言。", "episode": "第649回", "timestamp": "2025/11/12 1:22:58"}, {"id": "M177", "speaker": "田淵智也", "quote": "田淵さん「世の中への恩返しを出来るだけやろう」", "context": "第712回の放送で、SNSのアカウントを開設した田淵さんが仰られていた名言", "episode": "第712回", "timestamp": "2025/11/12 4:04:40"}, {"id": "M178", "speaker": "田淵智也", "quote": "田淵さん「SNSの悪魔と戦う」", "context": "第712回の放送で、SNSのアカウントを開設した田淵さんがおすすめを見てしまう時に仰られていた名言", "episode": "第712回", "timestamp": "2025/11/12 4:06:26"}, {"id": "M179", "speaker": "田淵智也", "quote": "田淵さん「毎日見てると会いたくなる」", "context": "第712回の放送で、タイムラインに出てくるアイドルを何度も見てると会いたくなることを仰られていた名言", "episode": "第712回", "timestamp": "2025/11/13 2:27:25"}, {"id": "M180", "speaker": "田淵智也", "quote": "田淵さん「努力してんだよ。売れてる人はよう。」", "context": "第712回の放送で、SNSなどで売れている人は努力をしているという時に仰られていた名言", "episode": "第712回", "timestamp": "2025/11/13 3:06:53"}, {"id": "M181", "speaker": "田代智一", "quote": "田代さん「いかに低い労力で続けられるか」", "context": "第674回の放送で、たっちレディオを続ける秘訣で仰られていた名言", "episode": "第674回", "timestamp": "2025/11/16 7:51:02"}, {"id": "M182", "speaker": "田淵智也", "quote": "田淵さん「ネクストバッターズサークルでずっと素振りしとけば、きた時に当たる」", "context": "第674回の放送で、チャンスがくるために準備を怠らないために仰られていた名言", "episode": "第674回", "timestamp": "2025/11/16 7:53:16"}, {"id": "M183", "speaker": "田代智一", "quote": "田代さん「自分の中のベター、自分の中のベストを目指そう」", "context": "第674回の放送で、憧れの人を目標にするのではなく自分の中に目標を作ることを仰られていた名言", "episode": "第674回", "timestamp": "2025/11/16 8:00:00"}, {"id": "M184", "speaker": "田淵智也", "quote": "田淵さん「憧れの自分になれなくてもくよくよしない」", "context": "第674回の放送で、憧れの自分になれなくても大丈夫ということを表現された名言", "episode": "第674回", "timestamp": "2025/11/16 8:02:55"}, {"id": "M185", "speaker": "田淵智也", "quote": "田淵さん「でも、まぁ今が楽しいからいいかぁ」", "context": "第674回の放送で、憧れの自分になれなくても今の現状を楽しむことを表現された名言", "episode": "第674回", "timestamp": "2025/11/16 8:04:35"}, {"id": "M186", "speaker": "田淵智也", "quote": "田淵さん「人生に飽きそう」", "context": "第700回の放送で、ミドルエイジクライシスに陥りそうな田淵さんが仰られていた名言", "episode": "第700回", "timestamp": "2025/11/19 23:39:41"}, {"id": "M187", "speaker": "デラさん", "quote": "デラさん「ずっと42歳でいく」", "context": "第700回の放送で、ミドルエイジクライシスに陥りそうな田淵さん対して、デラさんが仰られていた名言", "episode": "第700回", "timestamp": "2025/11/19 23:42:11"}, {"id": "M188", "speaker": "田淵智也", "quote": "田淵さん「仲間と何かをする」", "context": "第700回の放送で、田淵さんが自分は何が好きなのかを突き詰めた時に仰られていた名言", "episode": "第700回", "timestamp": "2025/11/19 23:44:28"}, {"id": "M189", "speaker": "田代智一", "quote": "田代さん「コミューンをつくる」", "context": "第700回の放送で、ミドルエイジクライシスになりそうな田淵さんに解決策を提示された名言", "episode": "第700回", "timestamp": "2025/11/20 8:16:08"}, {"id": "M190", "speaker": "デラさん", "quote": "デラさん「ピュア談ですよ」", "context": "第700回の放送で、700回の放送全体がこれこそ雑談だという話から、これは雑談ではなくピュア談だと仰られていた名言。", "episode": "第700回", "timestamp": "2025/11/20 8:18:24"}, {"id": "M191", "speaker": "田淵智也", "quote": "田淵さん「修道院に入る」", "context": "第700回の放送で、ミドルエイジクライシスに悩んだ人は最終的に修道院に入るにたどり着くと仰られていた名言", "episode": "第700回", "timestamp": "2025/11/20 8:20:22"}, {"id": "M192", "speaker": "田淵智也", "quote": "田淵さん「昨日までなしだったことが、今日ありになる」", "context": "第621回の放送で、新薬が発明された時に医者の方が手のひらを返したように称賛することを自分でも肝に銘じているという時に仰られていた名言", "episode": "第621回", "timestamp": "2025/11/25 1:33:00"}, {"id": "M193", "speaker": "田代智一", "quote": "田代さん「もっともらしい説明を真に受けない方がいい」", "context": "第621回の放送で、田代さんのたっちメモに書いてあった名言。", "episode": "第621回", "timestamp": "2025/11/30 6:19:44"}, {"id": "M194", "speaker": "田淵智也", "quote": "田淵さん「恐れはあるけど、蓋明ければなんとかなるんじゃないの」", "context": "第625回の放送で、小学生から中学生になるのに不安というリスナーからのメールに仰られていた名言", "episode": "第625回", "timestamp": "2025/12/12 8:53:01"}, {"id": "M195", "speaker": "田淵智也", "quote": "田淵さん「世の中の不条理や怒りは全てウケるに変換できる」", "context": "第625回の放送で、小学生から中学生になるのに不安を抱えているリスナーからのメールに仰られていた名言", "episode": "第625回", "timestamp": "2025/12/12 8:54:27"}, {"id": "M196", "speaker": "田淵智也", "quote": "田淵さん「学んどいて損はない」", "context": "第107回放送で、詰め込み教育の話題になっているときに微分積分や歴史の年号を学ぶのに意味がないということにたいして仰られていた名言", "episode": "第107回", "timestamp": "2025/12/14 6:49:38"}, {"id": "M197", "speaker": "田代智一", "quote": "田代さん「突き詰めると運だよね」", "context": "第113回の放送で、実写化作品のできばえについて仰られていた名言", "episode": "第113回", "timestamp": "2025/12/14 7:23:55"}, {"id": "M198", "speaker": "田淵智也", "quote": "田淵さん「嫌がる人もいるよね」", "context": "第113回の放送で、アイドルのライブで撮影OKにしている界隈の話題で仰られていた名言", "episode": "第113回", "timestamp": "2025/12/14 7:25:40"}, {"id": "M199", "speaker": "田淵智也", "quote": "田淵さん「ボロクソに褒めてください」", "context": "第113回の放送で、閉塞感を打破できた感想が欲しいと仰られていた名言", "episode": "第113回", "timestamp": "2025/12/14 7:27:32"}, {"id": "M200", "speaker": "田淵智也", "quote": "田淵さん「俺らの気づかないところで見えない力が働いてる」", "context": "第119回の放送で、漢字の書き順が昔と違っているのではないかという話題で仰られていた名言", "episode": "第119回", "timestamp": "2025/12/14 8:56:18"}, {"id": "M201", "speaker": "田淵智也", "quote": "田淵さん「お前それ電話だぞ」", "context": "第119回の放送で、スマホのアプリをたくさん入れている人に対して仰られていた名言", "episode": "第119回", "timestamp": "2025/12/14 8:57:34"}, {"id": "M202", "speaker": "田淵智也", "quote": "田淵さん「宗教上の理由でGPS使えない」", "context": "第119回の放送で、Googleマップの現在位置が使えない時に仰られていた名言。コンパスのアプリは入れている。", "episode": "第119回", "timestamp": "2025/12/14 8:59:27"}, {"id": "M203", "speaker": "田淵智也", "quote": "田淵さん「俺が最初に目を付けてたのに現象ね」", "context": "第119回の放送で、デラさんがLINEアプリを流行る前から使用していたという発言に仰られていた名言。", "episode": "第119回", "timestamp": "2025/12/14 9:01:29"}, {"id": "M204", "speaker": "田代智一", "quote": "田代さん「なんなのみんなストーカー？」", "context": "第121回の放送で、田代さんのツイートに田淵さんが載っていたらたくさんリツイートされたという話題から仰られていた名言", "episode": "第121回", "timestamp": "2025/12/14 9:40:09"}, {"id": "M205", "speaker": "田代智一", "quote": "田代さん「田淵さんに友達いるよ。田代さんが友達だよ。」", "context": "第121回の放送で、田代さんのツイートに田淵さんが写っている画像をアップしたらたくさんリツイートされた話題で、みんながリツイートすることで田淵さんに田代さんが友達なんだよということを伝えているということを仰られていた名言。", "episode": "第121回", "timestamp": "2025/12/14 9:43:11"}, {"id": "M206", "speaker": "田淵智也", "quote": "田淵さん「私のポテンシャルを過小評価しすぎじゃない？」", "context": "第121回の放送で、飲み会の途中で寝てしまうのは小休止。サッカーで言うところのハーフタイムだと仰られていた時に出た名言。", "episode": "第121回", "timestamp": "2025/12/14 9:45:04"}, {"id": "M207", "speaker": "田淵智也", "quote": "田淵さん「生涯で一番忙しい1ヶ月」", "context": "第121回目の放送で、なんども言っていると前置きしたうえで一番忙しい時期が終わった時に仰られていた名言。", "episode": "第121回", "timestamp": "2025/12/14 9:46:54"}, {"id": "M208", "speaker": "デラさん", "quote": "デラさん「シャラくさいですよね！」", "context": "第121回の放送で、キリンのCMが以前のものと比べて評価されているのはバラエティーの手法によるものであることを気づいていないネット民に対して仰られていた名言", "episode": "第121回", "timestamp": "2025/12/14 9:49:31"}, {"id": "M209", "speaker": "田淵智也", "quote": "田淵さん「大ボケをかます」", "context": "第756回の放送で、40歳の記念にソロアルバムを出した田淵さんが仰られていた名言", "episode": "第756回", "timestamp": "2025/12/25 7:37:04"}, {"id": "M210", "speaker": "田淵智也", "quote": "田淵さん「売れるためならなんでもします」", "context": "第756回の放送で、ソロアルバムを発売する田淵さんが仰られていた名言", "episode": "第756回", "timestamp": "2025/12/25 7:38:27"}], "heisokus": [{"id": "H001", "source": "アンケート投稿（テストプレイ）", "title": "脚本などを書き始めるが、根気のなさからすぐに書くのを断念してしまう。", "detail": "第610回。私は映画、演劇やコント、漫才が大好きでよく観に行くのですが毎回なんて面白い作品なんだと思うのと同時になんでこんなに作り上げることが出来るんだろうと思っていて、自分でも書いてみたいと思い脚本などを書き始めるのですが、性格の問題なのか根気のなさなのかすぐに書くのを断念してしまいます。という閉塞感に締め切りを決める。マッチする理想の尺感を決める。成功体験、承認欲求を得れるようにとりあえず一回完成させてみる。先例のフォーマットを先に決める。短いシーンやショートコントをたくさんつくってみる。60点でも一回出してみる勇気を持って出してみる。などのアドバイスをたくさんいただいたのとデラさんからの論文のハックがためになったので印象に残りました。", "episode": "第610回", "timestamp": "2025/08/22 22:36:00"}, {"id": "H002", "source": "アンケート投稿（テストプレイ）", "title": "上記と被るのですが、蛙化に真っ直ぐキレる現象の回が好きです", "detail": "天下のアベプラが本来の意味の蛙化現象の解説を放棄していたと熱弁している田淵さんが印象的でした！", "episode": "", "timestamp": "2025/08/23 11:31:20"}, {"id": "H003", "source": "アンケート投稿（テストプレイ）", "title": "東大の彼", "detail": "珍しく続編のメールが来たため", "episode": "", "timestamp": "2025/08/24 5:38:12"}, {"id": "H004", "source": "アンケート投稿（テストプレイ）", "title": "第552回 有料配信についてのブレスト", "detail": "これに限らず、いろいろと企画が立ち上がるのにその後なかったことになっているものが多すぎるため（グッズ制作とか）", "episode": "第552回", "timestamp": "2025/08/24 5:47:00"}, {"id": "H005", "source": "アンケート投稿（テストプレイ）", "title": "やりたい仕事か向いてる仕事か", "detail": "みんな向き不向きがあって、田代さんが昔電車のドアに広告のシールを貼るバイトをした際、丁寧に貼っていたら、ズレてもいいから沢山早く貼っていってと上司に指摘された。人によって気になる事が違う、その特性を知って選ぶといいとおっしゃっていたこと。", "episode": "", "timestamp": "2025/08/25 4:03:52"}, {"id": "H006", "source": "アンケート投稿（テストプレイ）", "title": "「蛙化現象」の意味の変遷", "detail": "397回（2018年）で話題にしたのに色々変遷を経て638回（2023年）でTwitterで募集しさらにタツオさんをゲストに迎えて特集するなど引っ張ったから", "episode": "第397回", "timestamp": "2025/08/28 21:28:08"}, {"id": "H007", "source": "アンケート投稿（テストプレイ）", "title": "美味しいものが販売終了になってしまうのが残念だ。（無印の海老クリームパスタソースが販売終了になってしまった）", "detail": "自分のメールが読まれたから", "episode": "", "timestamp": "2025/09/01 8:05:35"}, {"id": "H008", "source": "アンケート投稿（テストプレイ）", "title": "すいませんパッと思いつきませんでした。", "detail": "", "episode": "", "timestamp": "2025/09/03 0:21:56"}, {"id": "H009", "source": "アンケート投稿（テストプレイ）", "title": "2、3年前くらいの放送で、教職員の方が結婚して子どもを持ちたいとは思うけど仕事にやり甲斐を見出しているので悩んでいる、という閉塞", "detail": "妊娠出産育児はタイムリミットがあるので、子どもを持ちたい気持ちがあるなら自分だったら仕事は少しお休みする道を選ぶと思い、印象に(記憶に)残っています。", "episode": "", "timestamp": "2025/09/28 11:19:46"}, {"id": "H010", "source": "アンケート投稿（テストプレイ）", "title": "ロスの話", "detail": "なんか丁度たっちレディオを聞き始めたタイミングでPodCastの割と新しめのところにありました。ガッキーと源ちゃんが結婚したタイミングのやつです。なんかすっごい衝撃でめっちゃ覚えてます", "episode": "", "timestamp": "2025/10/21 10:58:09"}, {"id": "H011", "source": "アンケート投稿（テストプレイ）", "title": "仕事に熱中しすぎたら出産の機会逃してないか??", "detail": "第709回(丁度聞いてるのでめっちゃ送ってます)の冒頭。自分は現在２０歳女ですが出産はおろか結婚できるかすら分かんない人生すぎて共感していました。男女問わずおんなじ悩みを抱えている人も一定数いると思います", "episode": "第709回", "timestamp": "2025/10/21 11:07:03"}, {"id": "H012", "source": "アンケート投稿（テストプレイ）", "title": "701回の、「告白というのは好意を告げるプラス交際の要求」", "detail": "告白に対してそんなに深く考えたことがなかったので、そこに引っかかる人もいるんだなぁと印象深い。自分には全くなかった考え方を知れたことが嬉しかった。", "episode": "第701回", "timestamp": "2025/11/07 20:59:46"}, {"id": "H013", "source": "アンケート投稿（テストプレイ）", "title": "彼氏が自分の誕生日にお母さんへのプレゼントを選んでいた(538回)", "detail": "田淵さんが「その彼は、次の彼女には 僕はマザコンですがいいですか？って聞いた方がいい」みたいなことを仰っていて、それが面白かったから。", "episode": "第538回", "timestamp": "2025/11/07 21:13:17"}, {"id": "H014", "source": "年末閉塞感アンケート", "title": "あなたの閉塞感を教えてください", "detail": "【ジャンル】閉塞感を感じやすいシチュエーションは？ / 【打破アプローチ】普段閉塞感を感じた時に打破する方法は？ / 【関連1】番組で印象に残ってる閉塞感を教えてください / 【関連2】番組で印象に残ってる打破は？", "episode": "", "timestamp": ""}, {"id": "H015", "source": "年末閉塞感アンケート", "title": "正社員さんと仕事内容は同じ(求められる目標、裁量権、伴う責任がほぼ同じ)なのに、雇用形態が違う(パート)ために、社内で得られる恩恵が受けられない(特に社内研修系)", "detail": "【ジャンル】仕事・職場, SNS・ネット, 街中・日常生活 / 【打破アプローチ】価値観を変える・視点をズラす, とりあえず好きな音楽を聴いて、脳をスッキリさせる / 【関連1】彼氏のために東大へ行くかどうか迷ってる方の話 / 【関連2】面倒なことほどやる", "episode": "", "timestamp": ""}, {"id": "H016", "source": "年末閉塞感アンケート", "title": "・自分は人の好きなものに対して興味を持とうとするのに、相手は誰も興味を示してくれない。だんだん自分は相手の好きを大切にしているのにどうして自分は大切にしてもらえないのか悲しくなる。\n\n・子供が生まれた人のSNSがいきなり子供一色になること。今まであまり更新がなかった人も急にストーリーズを毎週更新するようになっている。拒絶したいわけではないが変化が大きすぎるので何故そうなるのかよくわからず困惑してしまう。\n\n・人の気持ちを汲むことと決めつけることの違いがわからない。「相手はこう思っているだろう」と推測する行為自体は両方同じはずなのに前者と後者では何が違うのか。", "detail": "【ジャンル】仕事・職場, 友人・人間関係, 家族・親族, SNS・ネット, 街中・日常生活, 政治・社会, 趣味 / 【打破アプローチ】価値観を変える・視点をズラす, ユーモア・ネタで乗り切る / 【関連1】第６８２回　感情移入しすぎて疲れてしまう人\n私も感情移入しがちなので同じ悩みを持つ人がいるのが嬉しかった。\n相談者さんの程度よりは軽いかもしれないが、見たいけれど見るのがこわい作品は多くある。 / 【関連2】第６８２回　感情移入しすぎて疲れてしまう人\n素直になって「くらっている」と伝えること。それをうらやましいと思う人もいること。\nそんなに重い感情を人に話してもいいものか悩んでいたので、言ってしまってもいいのかと目からウロコでした。", "episode": "第６８２回", "timestamp": ""}, {"id": "H017", "source": "年末閉塞感アンケート", "title": "会議が長く生産性がない", "detail": "【ジャンル】仕事・職場, 街中・日常生活, 政治・社会 / 【打破アプローチ】ユーモア・ネタで乗り切る / 【関連1】プロレスって決まった筋書きなのになぜ楽しめるのか？という疑問やひっかかりが個人的にありました。 / 【関連2】プロレスは虚実皮膜論的楽しみがあるという視点を教えてもらい、今でもプロレスを目にするたびに思い出します。", "episode": "", "timestamp": ""}, {"id": "H018", "source": "年末閉塞感アンケート", "title": "私は毎日実家の母とビデオ通話しています。私の時間が取れるのが深夜なので、まだ夕食も取れていない状態で通話をしています。主に母が話していて、母はいつもご飯に何を食べたとか、何度も聞いた話を繰り返すとかで20〜30分くらい経ってしまい、空腹で疲れていることもあり、イライラしてしまうことも多いです。ただ、母が精神的に不安定で私も心配なので、この日課をやめることは難しそうです。（母の身近な話し相手は私しかいません。）何とか10分くらいの通話でさくっと終わらせたいと思っていますが、うまくいかず、閉塞感を感じています。", "detail": "【ジャンル】仕事・職場, 家族・親族, 街中・日常生活 / 【打破アプローチ】価値観を変える・視点をズラす, 忘れる / 【関連1】0円ファン / 【関連2】理不尽な相手を人間だと思わない", "episode": "", "timestamp": ""}, {"id": "H019", "source": "年末閉塞感アンケート", "title": "電車に乗っているとよく感じるのですが、想像力の欠けている人が多くて閉塞感を感じています。\n自身の安全や、荷物等に関する他社への配慮よりもスマホを優先し、揺れているにも関わらずつり革や手すりにつかまろうとしない人。前に立つ人や通りかかる人などのことなどお構いなしに足を組んで座っている人。動線を阻んでいるため奥が空いているにも関わらず、自分からは動かない人。ちょっと考えればみんなが快適とまでは言わなくても不快さの軽減ぐらいはできるのに、自分の行為が撒き散らす迷惑に対して想像力が働かない人が多くて困っています。", "detail": "【ジャンル】仕事・職場, SNS・ネット, 街中・日常生活, 政治・社会 / 【打破アプローチ】価値観を変える・視点をズラす, 物理的な工夫で解決する", "episode": "", "timestamp": ""}, {"id": "H020", "source": "年末閉塞感アンケート", "title": "将来がうっすら不安", "detail": "【ジャンル】将来がうっすら不安 / 【打破アプローチ】価値観を変える・視点をズラす, ユーモア・ネタで乗り切る / 【関連1】アロマンティックを公言するか否か（590回） / 【関連2】ボンヤリ友達を作る", "episode": "第590回", "timestamp": ""}, {"id": "H021", "source": "年末閉塞感アンケート", "title": "チケットが買えない", "detail": "【ジャンル】趣味 / 【打破アプローチ】価値観を変える・視点をズラす / 【関連1】アーティストを勧めると宗教的になる / 【関連2】撮影できないと思い出に出来ない(500回)", "episode": "第500回", "timestamp": ""}, {"id": "H022", "source": "年末閉塞感アンケート", "title": "友達が欲しいけど1人が好き", "detail": "【ジャンル】仕事・職場, 友人・人間関係, 趣味 / 【打破アプローチ】価値観を変える・視点をズラす, 新しい習慣・行動を試す", "episode": "", "timestamp": ""}, {"id": "H023", "source": "年末閉塞感アンケート", "title": "学歴コンプレックス", "detail": "【ジャンル】学校・勉強, 友人・人間関係, SNS・ネット, 政治・社会 / 【打破アプローチ】とりあえず趣味などに没頭する / 【関連1】第628回13年目の真実の回のCDはどうあるべきかという閉塞感です。たっちレディオで度々取り上げられていますが、正解がない問題だと思っていて、これからどう付き合っていくかは時代とともに変わっていくのだろうなと思っています。 / 【関連2】第530回ロスは恥だが役に立つの回かなと思います。推しのロス問題は長年の日本の社会問題でもあると思いますし、結局ロスでも良いんだ!という結末に思わず唸ってしまった記憶があります。この回の放送あたりから聞き始めた者ではありますが(それもあってか)特に印象の強い回だったと思います。\nあと打破なのか分かりませんがプレゼント選手権はすごく参考になりました。", "episode": "第628回", "timestamp": ""}, {"id": "H024", "source": "年末閉塞感アンケート", "title": "日常での閉塞感があまりないので、ちょっと重めのやつを吐き出します。\nSNS等で散見される、インプレ稼ぎのデマや嘘について、特に日本vs他国といった対立を煽るような悪意あるポストが拡散されている場合、歴史や文化を知らない外国人が間違った知識を信じてしまったり、haterが集まって罵り合ったりと、状況が悪化の一途を辿りがちなことにモヤります。\n\n私は長く海外に住んでいた経験から、日本の良さを外から知ることができて、それを世界に広めたい、日本のプレゼンスを上げたいと思っているので、真逆の動きに閉塞感を覚えてしまいます。\n\nhaterに対してはどんなに言葉を尽くしたところで意味ないことは理解しているし、悪意がある人は世界的に見れば一部だとは思うものの、日本の悪質なデマを流したり、街中や文化財に対して迷惑行為をするYouTuber等もいます。\n\nネットやスマホの普及とともに、教養に乏しい層も簡単にSNS等を通じて情報を得られ、偏った思想や差別・ヘイトの拡散に加担し、情報リテラシーや知識に格差が生まれている状況に危機感を覚えつつも、個人ではどうすることも出来ないのでモヤるばかりです…。\n\n（答えが無さすぎてふつおたに書けないので、ここで成仏させてください。長いうえにゲームにも役立たなそうな閉塞感で申し訳ございません…！）", "detail": "【ジャンル】SNS・ネット, 政治・社会 / 【打破アプローチ】価値観を変える・視点をズラす, ユーモア・ネタで乗り切る, 家族など近い関係の人と議論する / 【関連1】価値観を変える・視点をズラす, ユーモア・ネタで乗り切る, 家族など近い関係の人と議論する / 【関連2】家族の問題（兄弟の前科でしたっけ…）について恋人に話す背中を押してほしいというメールに対して、深い関係になりそうな相手に、どこまでを自己として開示するかという議論に発展したこと。例えば、家族はあくまで他人か、自分を構成する一部かなど、その人の育った環境や価値観によって、色々な意見が出てきそうで面白いと思ったので、印象に残っています。", "episode": "", "timestamp": ""}, {"id": "H025", "source": "年末閉塞感アンケート", "title": "自分の限界なのか、伸び代なのか見極めが出来ているのかわからないところ。", "detail": "【ジャンル】自分の限界なのか、伸び代なのか見極めが出来ているのかわからないところ。 / 【打破アプローチ】新しい習慣・行動を試す, 物理的な工夫で解決する / 【関連2】最近だと学歴のコンプレックスをワーホリで解消。", "episode": "", "timestamp": ""}, {"id": "H026", "source": "年末閉塞感アンケート", "title": "20代中盤のOLらしい典型的な閉塞感を感じています。恋愛及び結婚、仕事(今後のキャリアをどの方向に舵を切るか)勉強や自己研鑽…など今後の人生について悩むことが多いです。\n\n一番の悩みは恋愛です。結婚願望はあるので一年以上マッチングアプリをやり数十人と会ってきたが、長く続くような出会いがなく…。\n\n自分に問題があるのかなぁ、皆はどのような閉塞感を感じているんだろう、と悩んだ時は過去回も遡ってたっちレディオを聞いています。", "detail": "【ジャンル】友人・人間関係, 政治・社会 / 【打破アプローチ】価値観を変える・視点をズラす, 新しい習慣・行動を試す / 【関連1】第555回 手芸を副業に、の回 \nまさにわたしも手芸を趣味兼副業としてやっており御三方の捉え方は参考になりました / 【関連2】第541回 孤独との戦い方については大変印象に残っています\nコロナ禍のこの相談者さん程では無いですが、定期的に孤独感や寂しさに苛まれた時はこの回を聞いています", "episode": "第555回", "timestamp": ""}, {"id": "H027", "source": "年末閉塞感アンケート", "title": "飲食店などで客が年下、特に学生の店員に対して敬語を使っていない様子を見るとモヤッとする。サービスを提供してくれてるんだから丁寧に接しろよというか、客と店は持ちつ持たれつの関係なんだからせめて互いに気持ちよく過ごせるように気を遣おうよと思う。", "detail": "【ジャンル】SNS・ネット, 政治・社会 / 【打破アプローチ】価値観を変える・視点をズラす, ユーモア・ネタで乗り切る / 【関連1】第687回　東大に行った彼のために一年浪人するべきか？の話 / 【関連2】第715回　バンドでパートを固定する必要はない", "episode": "第687回", "timestamp": ""}, {"id": "H028", "source": "年末閉塞感アンケート", "title": "①所謂「名前のない家事」を実施するタイミングが夫婦間で異なる　②職場がPCで作成できる書類を紙出力の方が早い！と手書きでやるよう求められる。PC慣れしているので、手書きの方が明らかに時間がかかるが、所属一年目のため文句が言いづらい", "detail": "【ジャンル】仕事・職場, 家族・親族 / 【打破アプローチ】諦め / 【関連1】恋愛系（彼氏がプロポーズしてこない）", "episode": "", "timestamp": ""}, {"id": "H029", "source": "年末閉塞感アンケート", "title": "米が高い・渋谷駅がダンジョン・最寄り駅にホームドアがないので人身事故が多い", "detail": "【ジャンル】SNS・ネット, 街中・日常生活, 政治・社会 / 【打破アプローチ】価値観を変える・視点をズラす, ユーモア・ネタで乗り切る, 新しい習慣・行動を試す / 【関連1】「おばさん」を自称することについて（燃えたため） / 【関連2】スマホ捨てろ（捨てられてない）", "episode": "", "timestamp": ""}, {"id": "H030", "source": "年末閉塞感アンケート", "title": "街中で苦手な音があるので、それと戦っています。\n小銭が擦れる音が苦手です。\nバスの中で小銭をニギニギする方に遭遇すると大変です。\n普通に使用する時に出る音は平気なのですが、擦れる音がどうにも苦手に感じてしまいます。\nイヤホンや意識をそらすことで、なんとかやり過ごしていますが、はやくキャッシュレス化が全国民に浸透してほしいなと思ってしまいます（笑）", "detail": "【ジャンル】街中・日常生活 / 【打破アプローチ】価値観を変える・視点をズラす, 物理的な工夫で解決する / 【関連1】父親の浮気を告発するかどうかのお悩み（第454回） / 【関連2】上記のお悩みに対して、「その正義感が全員にとって正しいのか」という視点から、相談者が浮気を告発することで起こりうるリスクがあることをしっかり提示されていました。私自身も、自分が口をつぐむことで守った人間関係があったので、数年ぶりに自分のその時の行動が救われた気持ちになりました。", "episode": "第454回", "timestamp": ""}, {"id": "H031", "source": "年末閉塞感アンケート", "title": "挫折を繰り返しながら夢を追いかける人生なので閉塞感だらけです💦", "detail": "【ジャンル】仕事・職場 / 【打破アプローチ】新しい習慣・行動を試す, 科学的な方法を取り入れる, 物理的な工夫で解決する", "episode": "", "timestamp": ""}, {"id": "H032", "source": "年末閉塞感アンケート", "title": "古参PC周り担当と自認していたが、様々な状況で意欲の減退を感じている", "detail": "【ジャンル】仕事・職場, 趣味 / 【打破アプローチ】価値観を変える・視点をズラす, 科学的な方法を取り入れる, 物理的な工夫で解決する", "episode": "", "timestamp": ""}, {"id": "H033", "source": "年末閉塞感アンケート", "title": "AIにより自分の得意ジャンル消滅", "detail": "【ジャンル】SNS・ネット, 政治・社会 / 【打破アプローチ】価値観を変える・視点をズラす, ユーモア・ネタで乗り切る, 新しい習慣・行動を試す, 科学的な方法を取り入れる, 物理的な工夫で解決する,", "episode": "", "timestamp": ""}, {"id": "H034", "source": "年末閉塞感アンケート", "title": "人よりも劣らないように何事も気を張って頑張っています。ここ、15年、育児を優先し我慢ばかりしていたら、自分のやりたいことがわからなくなった。そんな自分を誰も見てくれてない。", "detail": "【ジャンル】仕事・職場, 趣味 / 【打破アプローチ】新しい習慣・行動を試す / 【関連1】人からのいわれのない評価 / 【関連2】知識を身につける", "episode": "", "timestamp": ""}, {"id": "H035", "source": "年末閉塞感アンケート", "title": "30代に入り、周りから結婚を求められることが増えました。相手だっていないし、結婚したいとも思っていないのに。\nこれがわたしの最大の閉塞感です。\nやっぱり結婚してる人が偉いのですか？", "detail": "【ジャンル】仕事・職場, 友人・人間関係 / 【打破アプローチ】価値観を変える・視点をズラす, ユーモア・ネタで乗り切る / 【関連1】恋愛相談 / 【関連2】恋愛相談と結婚観についてです", "episode": "", "timestamp": ""}, {"id": "H036", "source": "カード原案 (C109)", "title": "いつもの道が、なぜか遠回り…", "detail": "朝の通勤路、信号や工事、ゆっくり歩く人…理由は分からないのに、今日はやけに長い散歩みたいになっている。", "episode": "", "timestamp": ""}, {"id": "H037", "source": "カード原案 (C110)", "title": "開けようとしたページが、見つからない…", "detail": "ブラウザのタブを何度も探すけど見つからない。まるで本棚の隙間に吸い込まれた一冊の本みたい。", "episode": "", "timestamp": ""}, {"id": "H038", "source": "カード原案 (C111)", "title": "ルーティンワークで、ふと手が止まる…", "detail": "エクセルに数字を打ちながら、急に「ここはどこだっけ？」と別の世界にトリップしたように固まる。", "episode": "", "timestamp": ""}, {"id": "H039", "source": "カード原案 (C112)", "title": "『またこれか…』って、つい出ちゃう時", "detail": "書類の同じ修正依頼メールが今日3回目。脳内でため息のエコーが響く。", "episode": "", "timestamp": ""}, {"id": "H040", "source": "カード原案 (C113)", "title": "BGMが、急に途切れた感じ…", "detail": "カフェで作業中、急に音楽が止まり、空調の音だけがやけに大きく聞こえる。心まで静まり返る瞬間。", "episode": "", "timestamp": ""}, {"id": "H041", "source": "カード原案 (C114)", "title": "言いたいこと、喉元でUターン…", "detail": "会議でいいアイデアが浮かぶも、タイミングを逃して自分の中に引き返す。まるで高速出口を通り過ぎた車みたい。", "episode": "", "timestamp": ""}, {"id": "H042", "source": "カード原案 (C115)", "title": "頭の中、整理整頓したいなぁ…", "detail": "机の上も頭の中も書類だらけ。何から手を付けるべきか迷ううちに、さらに散らかっていく感覚。", "episode": "", "timestamp": ""}, {"id": "H043", "source": "カード原案 (C116)", "title": "心のアクセル、踏み込めない…", "detail": "スタートラインでエンジンはかかっているのに、ギアを入れられずに空ぶかしだけしているような日。", "episode": "", "timestamp": ""}, {"id": "H044", "source": "カード原案 (C117)", "title": "自分ルールに、縛られてるかも…", "detail": "「メールは朝しか返信しない」…自分で決めたルールが足かせになっているのに、なぜか手放せない。", "episode": "", "timestamp": ""}, {"id": "H045", "source": "カード原案 (C118)", "title": "解決策、検索中… (でも見つからない)", "detail": "Googleを5ページ目まで漁っても欲しい答えがない。出口のない迷路を歩き回っている気分。", "episode": "", "timestamp": ""}, {"id": "H046", "source": "カード原案 (C119)", "title": "ドアノブに、手が届かない…", "detail": "ゴール目前、あと一歩の距離がなぜか遠い。手を伸ばしても空をつかむようなもどかしさ。", "episode": "", "timestamp": ""}, {"id": "H047", "source": "カード原案 (C120)", "title": "あと一歩が、なぜか重い…", "detail": "メールの送信ボタンひとつ押すだけなのに、その指が鉛のように動かない。", "episode": "", "timestamp": ""}, {"id": "H048", "source": "カード原案 (C121)", "title": "予定表の、空白が怖い…", "detail": "来週のスケジュールに真っ白なページ。解放感よりも、じわじわ広がる不安。", "episode": "", "timestamp": ""}, {"id": "H049", "source": "カード原案 (C122)", "title": "自分の中の、信号がずっと赤…", "detail": "やるべきことが目の前にあるのに、心の交通信号が「進むな」と言い続ける。", "episode": "", "timestamp": ""}, {"id": "H050", "source": "カード原案 (C123)", "title": "リセットボタン、どこだっけ…", "detail": "ゲームなら一発なのに、人生の設定を元に戻すコマンドは見当たらない。", "episode": "", "timestamp": ""}, {"id": "H051", "source": "カード原案 (C124)", "title": "会話のテンポに、ついてけない時…", "detail": "話題が次々と変わる飲み会で、自分だけ古いチャンネルのラジオを聴いているような感覚。", "episode": "", "timestamp": ""}, {"id": "H052", "source": "カード原案 (C125)", "title": "みんなが知ってる歌、私だけ知らない…", "detail": "カラオケで突然始まった大合唱。口パクでごまかしながら、孤島に取り残された気分。", "episode": "", "timestamp": ""}, {"id": "H053", "source": "カード原案 (C126)", "title": "窓の外だけ、時間が進んでる感じ…", "detail": "自分の机の上は朝のままなのに、外は夕暮れの色。時間が外と中で別の速度を刻んでいる。", "episode": "", "timestamp": ""}, {"id": "H054", "source": "カード原案 (C127)", "title": "自分だけ、違う場所にいるみたい…", "detail": "同じ会議室にいるのに、話題や空気がまったく噛み合わない。", "episode": "", "timestamp": ""}, {"id": "H055", "source": "カード原案 (C128)", "title": "SNSの『いいね』が、やけに遠い…", "detail": "投稿しても反応ゼロ。砂漠に向かって声を投げたみたいな静けさ。", "episode": "", "timestamp": ""}, {"id": "H056", "source": "テストプレイ進行お題", "title": "YouTubeのおすすめ動画を見ていたら、いつの間にか外が暗い。どうすればやめられる？", "detail": "YouTubeのおすすめ動画をダラダラ見て時間が過ぎてしまう閉塞感", "episode": "", "timestamp": ""}]};
+  </script>
+
+  <!-- App Script -->
+  <script>
+    // State
+    let currentMode = 'meigen'; // 'meigen' or 'heisoku'
+    const selectedMeigens = new Set();
+    const selectedHeisokus = new Set();
+    const MAX_MEIGEN = 60;
+    const MAX_HEISOKU = 60;
+
+    let subFilter = 'all'; // 'all', 'selected', 'custom'
+    let currentFilterParam = 'all'; // speaker or source
+    let searchQuery = '';
+
+    // Load custom items from localStorage
+    const savedCustom = JSON.parse(localStorage.getItem('touch_radio_custom_items') || '{"meigens":[], "heisokus":[]}');
+    
+    let meigenItems = [...savedCustom.meigens, ...RAW_DATA.meigens];
+    let heisokuItems = [...savedCustom.heisokus, ...RAW_DATA.heisokus];
+
+    let customModalType = 'meigen';
+
+    function switchMode(mode) {
+      currentMode = mode;
+      subFilter = 'all';
+      currentFilterParam = 'all';
+      searchQuery = '';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+
+      const tabM = document.getElementById('modeTab-meigen');
+      const tabH = document.getElementById('modeTab-heisoku');
+
+      if (mode === 'meigen') {
+        tabM.className = 'flex-1 min-w-[200px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-black text-sm sm:text-base transition-all bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md';
+        tabH.className = 'flex-1 min-w-[200px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all bg-slate-100 text-slate-600 hover:bg-slate-200';
+      } else {
+        tabH.className = 'flex-1 min-w-[200px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-black text-sm sm:text-base transition-all bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md';
+        tabM.className = 'flex-1 min-w-[200px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all bg-slate-100 text-slate-600 hover:bg-slate-200';
+      }
+
+      renderFilterDropdown();
+      updateUI();
+    }
+
+    function renderFilterDropdown() {
+      const container = document.getElementById('filterDropdownContainer');
+      if (currentMode === 'meigen') {
+        container.innerHTML = `
+          <span class="text-slate-400 font-medium">発言者:</span>
+          <select id="filterParamSelect" onchange="setFilterParam(this.value)" class="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            <option value="all">全員 (指定なし)</option>
+            <option value="田淵智也">田淵智也</option>
+            <option value="田代智一">田代智一</option>
+            <option value="デラさん">デラさん</option>
+            <option value="サンキュータツオ">サンキュータツオ</option>
+            <option value="畑亜貴">畑亜貴</option>
+            <option value="徳永憲">徳永憲</option>
+            <option value="田代智一 / 田淵智也">田代・田淵共演</option>
+            <option value="その他・未分類">その他</option>
+          </select>
+        `;
+      } else {
+        container.innerHTML = `
+          <span class="text-slate-400 font-medium">種別:</span>
+          <select id="filterParamSelect" onchange="setFilterParam(this.value)" class="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <option value="all">全種別 (指定なし)</option>
+            <option value="カード原案">カード原案 (C109~C128)</option>
+            <option value="アンケート投稿">アンケート投稿 (テストプレイ)</option>
+            <option value="年末閉塞感アンケート">年末閉塞感アンケート</option>
+            <option value="自由投稿">ユーザー自由投稿</option>
+          </select>
+        `;
+      }
+    }
+
+    function setSubFilter(sf) {
+      subFilter = sf;
+      ['all', 'selected', 'custom'].forEach(s => {
+        const btn = document.getElementById(`subtab-${s}`);
+        if (s === sf) {
+          btn.className = 'px-3 py-1.5 rounded-lg transition bg-white text-orange-600 shadow-sm';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg transition hover:text-slate-900';
+        }
+      });
+      renderCards();
+    }
+
+    function setFilterParam(val) {
+      currentFilterParam = val;
+      renderCards();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      searchQuery = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      renderCards();
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      if (searchQuery) {
+        document.getElementById('clearSearchBtn').classList.remove('hidden');
+      } else {
+        document.getElementById('clearSearchBtn').classList.add('hidden');
+      }
+      renderCards();
+    });
+
+    function resetFilters() {
+      subFilter = 'all';
+      currentFilterParam = 'all';
+      searchQuery = '';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      if (document.getElementById('filterParamSelect')) {
+        document.getElementById('filterParamSelect').value = 'all';
+      }
+      setSubFilter('all');
+    }
+
+    function renderCards() {
+      const grid = document.getElementById('cardsGrid');
+      const emptyState = document.getElementById('emptyState');
+      grid.innerHTML = '';
+
+      const isMeigen = currentMode === 'meigen';
+      const items = isMeigen ? meigenItems : heisokuItems;
+      const selectedSet = isMeigen ? selectedMeigens : selectedHeisokus;
+
+      const filtered = items.filter(item => {
+        if (subFilter === 'selected' && !selectedSet.has(item.id)) return false;
+        if (subFilter === 'custom' && !item.is_custom) return false;
+
+        if (currentFilterParam !== 'all') {
+          if (isMeigen) {
+            if (item.speaker !== currentFilterParam) return false;
+          } else {
+            if (!item.source.includes(currentFilterParam)) return false;
+          }
+        }
+
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const titleText = (isMeigen ? item.quote : item.title || '').toLowerCase();
+          const detailText = (isMeigen ? item.context : item.detail || '').toLowerCase();
+          const epText = (item.episode || '').toLowerCase();
+          const idText = (item.id || '').toLowerCase();
+          if (!titleText.includes(q) && !detailText.includes(q) && !epText.includes(q) && !idText.includes(q)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      const customCount = items.filter(i => i.is_custom).length;
+      document.getElementById('visibleCount').innerText = filtered.length;
+      document.getElementById('subCountAll').innerText = items.length;
+      document.getElementById('subCountSelected').innerText = selectedSet.size;
+      document.getElementById('subCountCustom').innerText = customCount;
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+
+      filtered.forEach(item => {
+        const isSelected = selectedSet.has(item.id);
+        const card = document.createElement('div');
+        card.id = `card-${item.id}`;
+        card.className = `group relative p-4 sm:p-5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+          isSelected 
+            ? (isMeigen ? 'bg-amber-50/80 border-orange-400 shadow-md ring-2 ring-orange-400/50' : 'bg-teal-50/80 border-teal-500 shadow-md ring-2 ring-teal-400/50')
+            : 'bg-white border-slate-200/90 hover:border-slate-300 hover:shadow-sm'
+        }`;
+
+        card.onclick = () => toggleSelect(item.id);
+
+        let badgeHtml = '';
+        if (item.is_custom) {
+          badgeHtml = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-custom">✨ 自由投稿</span>';
+        } else if (isMeigen) {
+          if (item.speaker.includes('田淵') && item.speaker.includes('田代')) {
+            badgeHtml = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-tashiro">田代・田淵</span>';
+          } else if (item.speaker.includes('田淵')) {
+            badgeHtml = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-tabuchi">田淵智也</span>';
+          } else if (item.speaker.includes('田代')) {
+            badgeHtml = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-tashiro">田代智一</span>';
+          } else if (item.speaker.includes('デラ')) {
+            badgeHtml = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-dela">デラさん</span>';
+          } else if (item.speaker.includes('サンキュータツオ')) {
+            badgeHtml = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-tatsuo">サンキュータツオ</span>';
+          } else if (item.speaker.includes('畑亜貴')) {
+            badgeHtml = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-hata">畑亜貴</span>';
+          } else if (item.speaker.includes('徳永')) {
+            badgeHtml = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-tokunaga">徳永憲</span>';
+          } else {
+            badgeHtml = `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">${item.speaker}</span>`;
+          }
+        } else {
+          if (item.source.includes('カード原案')) {
+            badgeHtml = `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-card">${item.source}</span>`;
+          } else if (item.source.includes('年末閉塞感')) {
+            badgeHtml = `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-survey">年末アンケート</span>`;
+          } else {
+            badgeHtml = `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md badge-heisoku">アンケート投稿</span>`;
+          }
+        }
+
+        const titleText = isMeigen ? item.quote : item.title;
+        const detailText = isMeigen ? item.context : item.detail;
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-2.5">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-mono font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">#${item.id}</span>
+                ${badgeHtml}
+                ${item.episode ? `<span class="text-[11px] font-medium text-slate-500 bg-slate-100/80 px-2 py-0.5 rounded-md">${item.episode}</span>` : ''}
+              </div>
+              
+              <div class="w-6 h-6 rounded-lg border flex items-center justify-center transition ${
+                isSelected 
+                  ? (isMeigen ? 'bg-orange-500 border-orange-500 text-white' : 'bg-teal-600 border-teal-600 text-white')
+                  : 'bg-slate-50 border-slate-300 group-hover:border-slate-400 text-transparent'
+              }">
+                <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <h4 class="text-sm sm:text-base font-bold text-slate-900 leading-snug group-hover:text-orange-600 transition-colors">
+                ${titleText}
+              </h4>
+              ${detailText ? `
+                <p class="mt-2 text-xs text-slate-500 leading-relaxed bg-slate-50/80 p-2.5 rounded-xl border border-slate-100">
+                  ${detailText}
+                </p>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+            <span class="inline-flex items-center gap-1">
+              <i data-lucide="radio" class="w-3 h-3 text-slate-400"></i>
+              ${item.episode ? item.episode : (isMeigen ? (item.speaker || 'たっちレディオ') : item.source)}
+            </span>
+            <span>${item.timestamp ? item.timestamp.split(' ')[0] : '即時反映'}</span>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleSelect(id) {
+      const isMeigen = currentMode === 'meigen';
+      const selectedSet = isMeigen ? selectedMeigens : selectedHeisokus;
+      const maxLimit = isMeigen ? MAX_MEIGEN : MAX_HEISOKU;
+
+      if (selectedSet.has(id)) {
+        selectedSet.delete(id);
+      } else {
+        if (selectedSet.size >= maxLimit) {
+          showToast('上限到達', `${isMeigen ? '名言' : '閉塞感'}は${maxLimit}個までしか選択できません。`);
+          return;
+        }
+        selectedSet.add(id);
+      }
+      updateUI();
+    }
+
+    function updateUI() {
+      const isMeigen = currentMode === 'meigen';
+      const count = isMeigen ? selectedMeigens.size : selectedHeisokus.size;
+      const maxCount = isMeigen ? MAX_MEIGEN : MAX_HEISOKU;
+
+      // Update Top Tabs
+      document.getElementById('meigenTabBadge').innerText = `${selectedMeigens.size} / 60`;
+      document.getElementById('heisokuTabBadge').innerText = `${selectedHeisokus.size} / 60`;
+
+      // Update Active Status
+      document.getElementById('activeModeLabel').innerText = isMeigen ? '名言 選択中' : '閉塞感 選択中';
+      document.getElementById('activeCount').innerText = count;
+      document.getElementById('activeMax').innerText = `/ ${maxCount}`;
+      document.getElementById('activeSelectedBtnCount').innerText = count;
+
+      const pct = Math.min(100, (count / maxCount) * 100);
+      document.getElementById('activeProgressBar').style.width = `${pct}%`;
+
+      const badge = document.getElementById('activeStatusBadge');
+      if (count === maxCount) {
+        badge.className = 'hidden sm:inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-bold bg-green-100 text-green-700';
+        badge.innerHTML = '<i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 選択完了！';
+      } else if (count > 0) {
+        badge.className = 'hidden sm:inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium bg-amber-100 text-amber-800';
+        badge.innerHTML = `あと ${maxCount - count} 個選択`;
+      } else {
+        badge.className = 'hidden sm:inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium bg-slate-200 text-slate-600';
+        badge.innerHTML = `あと ${maxCount} 個選択してください`;
+      }
+
+      renderCards();
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Custom Item Modal Handlers
+    function openCustomItemModal() {
+      setCustomModalType(currentMode);
+      document.getElementById('customItemModal').classList.remove('hidden');
+      document.getElementById('customItemModal').classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeCustomItemModal() {
+      document.getElementById('customItemModal').classList.add('hidden');
+      document.getElementById('customItemModal').classList.remove('flex');
+    }
+
+    function setCustomModalType(type) {
+      customModalType = type;
+      const btnM = document.getElementById('customTypeMeigen');
+      const btnH = document.getElementById('customTypeHeisoku');
+      const speakerField = document.getElementById('customSpeakerField');
+      const contentLabel = document.getElementById('customContentLabel');
+      const detailLabel = document.getElementById('customDetailLabel');
+
+      if (type === 'meigen') {
+        btnM.className = 'flex-1 py-1.5 rounded-lg transition bg-white text-orange-600 shadow-sm';
+        btnH.className = 'flex-1 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900';
+        speakerField.classList.remove('hidden');
+        contentLabel.innerHTML = '名言内容 <span class="text-red-500">*</span>';
+        detailLabel.innerText = '文脈・詳細・どんな場面か（任意）';
+        document.getElementById('customContentInput').placeholder = '例: 人はいつか死ぬ';
+      } else {
+        btnH.className = 'flex-1 py-1.5 rounded-lg transition bg-white text-teal-700 shadow-sm';
+        btnM.className = 'flex-1 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900';
+        speakerField.classList.add('hidden');
+        contentLabel.innerHTML = '閉塞感内容・お悩み <span class="text-red-500">*</span>';
+        detailLabel.innerText = '理由・背景・打破アプローチなど（任意）';
+        document.getElementById('customContentInput').placeholder = '例: 朝起きてもやる気が出ずスマホを見てしまう';
+      }
+    }
+
+    function handleCustomItemSubmit(e) {
+      e.preventDefault();
+      const content = document.getElementById('customContentInput').value.trim();
+      const detail = document.getElementById('customDetailInput').value.trim();
+      const episode = document.getElementById('customEpisodeInput').value.trim();
+      const speaker = document.getElementById('customSpeakerInput').value;
+
+      if (!content) return;
+
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+
+      if (customModalType === 'meigen') {
+        const newItem = {
+          id: `MC${Date.now().toString().slice(-4)}`,
+          speaker: speaker,
+          quote: content,
+          context: detail,
+          episode: episode,
+          timestamp: dateStr,
+          is_custom: true
+        };
+        meigenItems.unshift(newItem);
+        selectedMeigens.add(newItem.id);
+        
+        savedCustom.meigens.unshift(newItem);
+        localStorage.setItem('touch_radio_custom_items', JSON.stringify(savedCustom));
+
+        if (currentMode !== 'meigen') switchMode('meigen');
+        showToast('名言を追加しました', `「${content}」を追加＆選択しました！`);
+      } else {
+        const newItem = {
+          id: `HC${Date.now().toString().slice(-4)}`,
+          source: '自由投稿',
+          title: content,
+          detail: detail,
+          episode: episode,
+          timestamp: dateStr,
+          is_custom: true
+        };
+        heisokuItems.unshift(newItem);
+        selectedHeisokus.add(newItem.id);
+
+        savedCustom.heisokus.unshift(newItem);
+        localStorage.setItem('touch_radio_custom_items', JSON.stringify(savedCustom));
+
+        if (currentMode !== 'heisoku') switchMode('heisoku');
+        showToast('閉塞感を追加しました', `「${content}」を追加＆選択しました！`);
+      }
+
+      // Reset form & close
+      document.getElementById('customContentInput').value = '';
+      document.getElementById('customDetailInput').value = '';
+      document.getElementById('customEpisodeInput').value = '';
+      closeCustomItemModal();
+      updateUI();
+    }
+
+    function resetCurrentModeSelection() {
+      if (currentMode === 'meigen') {
+        selectedMeigens.clear();
+      } else {
+        selectedHeisokus.clear();
+      }
+      updateUI();
+      showToast('クリア', '現在の選択をクリアしました');
+    }
+
+    function selectRandomAll() {
+      selectedMeigens.clear();
+      selectedHeisokus.clear();
+
+      const shufM = [...meigenItems].sort(() => 0.5 - Math.random());
+      shufM.slice(0, MAX_MEIGEN).forEach(m => selectedMeigens.add(m.id));
+
+      const shufH = [...heisokuItems].sort(() => 0.5 - Math.random());
+      shufH.slice(0, MAX_HEISOKU).forEach(h => selectedHeisokus.add(h.id));
+
+      updateUI();
+      showToast('自動選択完了', `名言${selectedMeigens.size}個、閉塞感${selectedHeisokus.size}個を選択しました！`);
+    }
+
+    function openSelectedModal() {
+      const isMeigen = currentMode === 'meigen';
+      const items = isMeigen ? meigenItems : heisokuItems;
+      const selectedSet = isMeigen ? selectedMeigens : selectedHeisokus;
+
+      document.getElementById('modalTitle').innerText = isMeigen ? `選択中の名言リスト (${selectedSet.size} / 60)` : `選択中の閉塞感リスト (${selectedSet.size} / 60)`;
+      
+      const container = document.getElementById('modalItemsContainer');
+      container.innerHTML = '';
+
+      if (selectedSet.size === 0) {
+        container.innerHTML = `<div class="text-center py-10 text-slate-400 text-xs">まだ何も選択されていません</div>`;
+      } else {
+        selectedSet.forEach(id => {
+          const item = items.find(i => i.id === id);
+          if (!item) return;
+          const row = document.createElement('div');
+          row.className = 'flex items-start justify-between gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition';
+          row.innerHTML = `
+            <div class="flex-1">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="text-[10px] font-mono text-slate-400">#${item.id}</span>
+                ${item.is_custom ? '<span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.2 rounded font-bold">自由投稿</span>' : ''}
+              </div>
+              <p class="text-xs font-bold text-slate-800">${isMeigen ? item.quote : item.title}</p>
+            </div>
+            <button onclick="toggleSelect('${item.id}'); openSelectedModal();" class="p-1 text-slate-400 hover:text-red-500">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          `;
+          container.appendChild(row);
+        });
+      }
+
+      document.getElementById('selectedModal').classList.remove('hidden');
+      document.getElementById('selectedModal').classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeSelectedModal() {
+      document.getElementById('selectedModal').classList.add('hidden');
+      document.getElementById('selectedModal').classList.remove('flex');
+    }
+
+    function openSubmitModal() {
+      document.getElementById('finalMeigenCount').innerText = selectedMeigens.size;
+      document.getElementById('finalHeisokuCount').innerText = selectedHeisokus.size;
+      document.getElementById('dlMeigenCount').innerText = selectedMeigens.size;
+      document.getElementById('dlHeisokuCount').innerText = selectedHeisokus.size;
+
+      document.getElementById('meigenStatusText').innerText = selectedMeigens.size === 60 ? '✓ 60個選択完了' : `あと ${60 - selectedMeigens.size} 個必要`;
+      document.getElementById('heisokuStatusText').innerText = selectedHeisokus.size === 60 ? '✓ 60個選択完了' : `あと ${60 - selectedHeisokus.size} 個必要`;
+
+      document.getElementById('submitModal').classList.remove('hidden');
+      document.getElementById('submitModal').classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeSubmitModal() {
+      document.getElementById('submitModal').classList.add('hidden');
+      document.getElementById('submitModal').classList.remove('flex');
+    }
+
+    // Export Handlers
+    function downloadSelectedCombinedCsv() {
+      let csvContent = "\uFEFFID,カテゴリ,発言者/種別,項目内容,詳細文脈・理由,関連放送回,タイムスタンプ\n";
+      meigenItems.filter(m => selectedMeigens.has(m.id)).forEach(m => {
+        csvContent += `${m.id},名言,"${m.speaker}","${(m.quote||'').replace(/"/g,'""')}","${(m.context||'').replace(/"/g,'""')}","${m.episode}","${m.timestamp}"\n`;
+      });
+      heisokuItems.filter(h => selectedHeisokus.has(h.id)).forEach(h => {
+        csvContent += `${h.id},閉塞感,"${h.source}","${(h.title||'').replace(/"/g,'""')}","${(h.detail||'').replace(/"/g,'""')}","${h.episode}","${h.timestamp}"\n`;
+      });
+      downloadFile(csvContent, 'touch_radio_voted_meigen_and_heisoku.csv');
+    }
+
+    function downloadSelectedMeigenCsv() {
+      let csvContent = "\uFEFFID,発言者,名言内容,文脈・詳細,関連放送回,タイムスタンプ\n";
+      meigenItems.filter(m => selectedMeigens.has(m.id)).forEach(m => {
+        csvContent += `${m.id},"${m.speaker}","${(m.quote||'').replace(/"/g,'""')}","${(m.context||'').replace(/"/g,'""')}","${m.episode}","${m.timestamp}"\n`;
+      });
+      downloadFile(csvContent, 'touch_radio_voted_meigen_60.csv');
+    }
+
+    function downloadSelectedHeisokuCsv() {
+      let csvContent = "\uFEFFID,種別・ソース,閉塞感内容,詳細・打破アプローチ,関連放送回,タイムスタンプ\n";
+      heisokuItems.filter(h => selectedHeisokus.has(h.id)).forEach(h => {
+        csvContent += `${h.id},"${h.source}","${(h.title||'').replace(/"/g,'""')}","${(h.detail||'').replace(/"/g,'""')}","${h.episode}","${h.timestamp}"\n`;
+      });
+      downloadFile(csvContent, 'touch_radio_voted_heisoku_60.csv');
+    }
+
+    function exportAllCsv() {
+      let csvContent = "\uFEFFID,カテゴリ,発言者/種別,項目内容,詳細文脈・理由,関連放送回,タイムスタンプ\n";
+      meigenItems.forEach(m => {
+        csvContent += `${m.id},名言,"${m.speaker}","${(m.quote||'').replace(/"/g,'""')}","${(m.context||'').replace(/"/g,'""')}","${m.episode}","${m.timestamp}"\n`;
+      });
+      heisokuItems.forEach(h => {
+        csvContent += `${h.id},閉塞感,"${h.source}","${(h.title||'').replace(/"/g,'""')}","${(h.detail||'').replace(/"/g,'""')}","${h.episode}","${h.timestamp}"\n`;
+      });
+      downloadFile(csvContent, 'touch_radio_all_extracted_266.csv');
+    }
+
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function showToast(title, desc) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastTitle').innerText = title;
+      document.getElementById('toastDesc').innerText = desc;
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 3500);
+    }
+
+    // Init
+    switchMode('meigen');
+  </script>
+</body>
+</html>
