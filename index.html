@@ -39,7 +39,7 @@
           </div>
           <h1 class="text-2xl sm:text-4xl font-black tracking-tight">たっちレディオ 名言＆閉塞感 投票フォーム</h1>
           <p class="mt-2 text-white/90 text-xs sm:text-sm max-w-2xl leading-relaxed">
-            【名言 60個】と【閉塞感 60個】をそれぞれ選んで投票するフォームです。リストにない項目は「＋自由投稿」からその場で追加＆即時反映できます！
+            【名言 60個】と【閉塞感 60個】をそれぞれ選んで投票するフォームです。選び終わったら「投票を送信する」を押すだけで自動集計されます！
           </p>
         </div>
         <div class="flex flex-wrap gap-2 md:flex-col sm:items-end justify-start">
@@ -47,8 +47,8 @@
             <i data-lucide="plus-circle" class="w-4 h-4 stroke-[2.5]"></i> 自由記述で新しく追加する
           </button>
           <div class="flex items-center gap-2">
-            <button onclick="exportAllCsv()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/30 rounded-xl text-xs font-semibold transition">
-              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> 全CSV保存
+            <button onclick="openGasSettingsModal()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/30 rounded-xl text-xs font-semibold transition" title="スプレッドシート連携設定">
+              <i data-lucide="settings-2" class="w-3.5 h-3.5"></i> 送信先設定
             </button>
             <button onclick="selectRandomAll()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-300 hover:bg-amber-200 text-slate-900 font-bold rounded-xl text-xs transition shadow-md">
               <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 自動選択
@@ -108,7 +108,7 @@
         <div class="flex items-center gap-2">
           <button onclick="openCustomItemModal()" class="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-bold text-xs rounded-xl transition">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            項目を追加
+            追加
           </button>
           <button onclick="openSelectedModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-semibold text-xs sm:text-sm rounded-xl transition shadow-sm">
             <i data-lucide="list-checks" class="w-4 h-4 text-orange-500"></i>
@@ -117,9 +117,9 @@
           <button onclick="resetCurrentModeSelection()" class="inline-flex items-center gap-1 px-2 py-1.5 text-slate-400 hover:text-red-600 text-xs font-medium rounded-xl transition" title="このモードの選択をクリア">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
           </button>
-          <button id="mainSubmitBtn" onclick="openSubmitModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow-md cursor-pointer">
+          <button id="mainSubmitBtn" onclick="openSubmitModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs sm:text-sm rounded-xl transition shadow-md cursor-pointer animate-pulse">
             <i data-lucide="send" class="w-4 h-4"></i>
-            投票まとめ確認
+            投票を送信する
           </button>
         </div>
 
@@ -238,7 +238,7 @@
             <option value="畑亜貴">畑亜貴</option>
             <option value="徳永憲">徳永憲</option>
             <option value="田代智一 / 田淵智也">田代・田淵共演</option>
-            <option value="その他">その他（自由入力）</option>
+            <option value="その他">その他</option>
           </select>
         </div>
 
@@ -307,53 +307,121 @@
     </div>
   </div>
 
-  <!-- Submit & Export Modal -->
+  <!-- Submit & Export Modal (Google Sheets Direct Submit) -->
   <div id="submitModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 text-center">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 text-center relative overflow-hidden">
       
-      <div class="w-14 h-14 bg-gradient-to-tr from-amber-400 to-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-orange-500/20">
-        <i data-lucide="clipboard-check" class="w-8 h-8"></i>
+      <!-- Loading Overlay -->
+      <div id="submitLoading" class="absolute inset-0 bg-white/95 backdrop-blur-sm hidden flex-col items-center justify-center z-10">
+        <div class="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <div class="text-sm font-bold text-slate-800">スプレッドシートに送信中...</div>
+        <div class="text-xs text-slate-400 mt-1">少々お待ちください</div>
       </div>
 
-      <h3 class="text-xl font-black text-slate-800 mb-1">投票内容の確認・エクスポート</h3>
-      <p class="text-xs text-slate-500 mb-5 leading-relaxed">
-        選択した名言・閉塞感（自由投稿分も含む）の投票状況を確認し、CSV保存や投票完了を行えます。
+      <!-- Success View -->
+      <div id="submitSuccessView" class="hidden py-6">
+        <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+        </div>
+        <h3 class="text-xl font-black text-slate-800 mb-2">投票が完了しました！</h3>
+        <p class="text-xs text-slate-500 leading-relaxed mb-6">
+          ご協力ありがとうございました！<br>投票データはGoogleスプレッドシートに記録されました。
+        </p>
+        <div class="space-y-2">
+          <button onclick="downloadSelectedCombinedCsv()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-4 h-4"></i> 念のため手元にもCSVを保存する
+          </button>
+          <button onclick="closeSubmitModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition">
+            閉じる
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Form View -->
+      <div id="submitFormView">
+        <div class="w-12 h-12 bg-gradient-to-tr from-amber-400 to-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-orange-500/20">
+          <i data-lucide="send" class="w-6 h-6"></i>
+        </div>
+
+        <h3 class="text-lg sm:text-xl font-black text-slate-800 mb-1">投票内容の送信・確認</h3>
+        <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+          選択した項目をGoogleスプレッドシートに直接送信して集計します。
+        </p>
+
+        <!-- Stats Summary Card -->
+        <div class="grid grid-cols-2 gap-3 mb-4 text-left">
+          <div class="p-3 bg-orange-50/70 border border-orange-200 rounded-xl">
+            <div class="text-[11px] font-bold text-orange-600 uppercase">① 名言</div>
+            <div class="text-lg font-black text-orange-900 mt-0.5">
+              <span id="finalMeigenCount">0</span> <span class="text-xs text-orange-600 font-semibold">/ 60個</span>
+            </div>
+            <div class="text-[10px] text-orange-500 mt-0.5" id="meigenStatusText">未完了</div>
+          </div>
+
+          <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-xl">
+            <div class="text-[11px] font-bold text-teal-700 uppercase">② 閉塞感</div>
+            <div class="text-lg font-black text-teal-900 mt-0.5">
+              <span id="finalHeisokuCount">0</span> <span class="text-xs text-teal-600 font-semibold">/ 60個</span>
+            </div>
+            <div class="text-[10px] text-teal-600 mt-0.5" id="heisokuStatusText">未完了</div>
+          </div>
+        </div>
+
+        <!-- Optional Name Field -->
+        <div class="text-left mb-4">
+          <label class="block text-xs font-bold text-slate-700 mb-1">お名前・たっちネーム（任意）</label>
+          <input type="text" id="voterNameInput" placeholder="匿名リスナー（空欄でもOK）" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+
+        <div class="space-y-2">
+          <button onclick="submitToGoogleSheets()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-sm rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i> スプレッドシートに投票を送信する
+          </button>
+          <button onclick="downloadSelectedCombinedCsv()" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-orange-500"></i> 手元にCSVダウンロード保存
+          </button>
+          <button onclick="closeSubmitModal()" class="w-full py-1.5 text-slate-400 hover:text-slate-600 text-xs font-medium transition">
+            選択に戻る
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GAS Setting Modal -->
+  <div id="gasModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 text-left">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="sheet" class="w-5 h-5 text-emerald-600"></i>
+          Googleスプレッドシート連携設定
+        </h3>
+        <button onclick="closeGasSettingsModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500 mb-3 leading-relaxed">
+        Google Apps Script (GAS) のウェブアプリURLを設定すると、投票結果が直接スプレッドシートに自動蓄積されます。
       </p>
 
-      <!-- Stats Summary Card -->
-      <div class="grid grid-cols-2 gap-3 mb-5 text-left">
-        <div class="p-3.5 bg-orange-50/70 border border-orange-200 rounded-xl">
-          <div class="text-[11px] font-bold text-orange-600 uppercase">① 名言の選択</div>
-          <div class="text-xl font-black text-orange-900 mt-1">
-            <span id="finalMeigenCount">0</span> <span class="text-xs text-orange-600 font-semibold">/ 60個</span>
-          </div>
-          <div class="text-[10px] text-orange-500 mt-0.5" id="meigenStatusText">未完了</div>
-        </div>
-
-        <div class="p-3.5 bg-teal-50/70 border border-teal-200 rounded-xl">
-          <div class="text-[11px] font-bold text-teal-700 uppercase">② 閉塞感の選択</div>
-          <div class="text-xl font-black text-teal-900 mt-1">
-            <span id="finalHeisokuCount">0</span> <span class="text-xs text-teal-600 font-semibold">/ 60個</span>
-          </div>
-          <div class="text-[10px] text-teal-600 mt-0.5" id="heisokuStatusText">未完了</div>
-        </div>
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-slate-700 mb-1">GAS ウェブアプリ URL</label>
+        <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500">
       </div>
 
-      <div class="space-y-2">
-        <button onclick="downloadSelectedCombinedCsv()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2">
-          <i data-lucide="download" class="w-4 h-4"></i> 選択した全投票データをCSVダウンロード
-        </button>
-        <button onclick="downloadSelectedMeigenCsv()" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
-          <i data-lucide="file-text" class="w-3.5 h-3.5 text-orange-500"></i> 名言のみCSVダウンロード (<span id="dlMeigenCount">0</span>件)
-        </button>
-        <button onclick="downloadSelectedHeisokuCsv()" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
-          <i data-lucide="file-text" class="w-3.5 h-3.5 text-teal-600"></i> 閉塞感のみCSVダウンロード (<span id="dlHeisokuCount">0</span>件)
-        </button>
-        <button onclick="closeSubmitModal()" class="w-full py-2 text-slate-400 hover:text-slate-600 text-xs font-medium transition">
-          選択に戻る
-        </button>
+      <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600 mb-4 space-y-1">
+        <div class="font-bold text-slate-700">📖 設定方法</div>
+        <div>1. リポジトリ内の <code>google_apps_script.js</code> をGASに貼り付け</div>
+        <div>2. 「新しいデプロイ」→「ウェブアプリ」でアクセス権を「全員」に設定</div>
+        <div>3. 発行されたURLをここに貼り付けて保存</div>
       </div>
 
+      <div class="flex items-center justify-end gap-2">
+        <button onclick="closeGasSettingsModal()" class="px-4 py-2 text-xs font-semibold text-slate-500">キャンセル</button>
+        <button onclick="saveGasSettings()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow">保存する</button>
+      </div>
     </div>
   </div>
 
@@ -384,9 +452,10 @@
     let currentFilterParam = 'all'; // speaker or source
     let searchQuery = '';
 
-    // Load custom items from localStorage
+    // Load custom items & settings from localStorage
     const savedCustom = JSON.parse(localStorage.getItem('touch_radio_custom_items') || '{"meigens":[], "heisokus":[]}');
-    
+    let gasEndpointUrl = localStorage.getItem('touch_radio_gas_url') || '';
+
     let meigenItems = [...savedCustom.meigens, ...RAW_DATA.meigens];
     let heisokuItems = [...savedCustom.heisokus, ...RAW_DATA.heisokus];
 
@@ -849,11 +918,13 @@
     function openSubmitModal() {
       document.getElementById('finalMeigenCount').innerText = selectedMeigens.size;
       document.getElementById('finalHeisokuCount').innerText = selectedHeisokus.size;
-      document.getElementById('dlMeigenCount').innerText = selectedMeigens.size;
-      document.getElementById('dlHeisokuCount').innerText = selectedHeisokus.size;
 
       document.getElementById('meigenStatusText').innerText = selectedMeigens.size === 60 ? '✓ 60個選択完了' : `あと ${60 - selectedMeigens.size} 個必要`;
       document.getElementById('heisokuStatusText').innerText = selectedHeisokus.size === 60 ? '✓ 60個選択完了' : `あと ${60 - selectedHeisokus.size} 個必要`;
+
+      document.getElementById('submitFormView').classList.remove('hidden');
+      document.getElementById('submitSuccessView').classList.add('hidden');
+      document.getElementById('submitLoading').classList.add('hidden');
 
       document.getElementById('submitModal').classList.remove('hidden');
       document.getElementById('submitModal').classList.add('flex');
@@ -863,6 +934,80 @@
     function closeSubmitModal() {
       document.getElementById('submitModal').classList.add('hidden');
       document.getElementById('submitModal').classList.remove('flex');
+    }
+
+    // Google Apps Script Submit Handler
+    async function submitToGoogleSheets() {
+      if (selectedMeigens.size === 0 && selectedHeisokus.size === 0) {
+        showToast('未選択', '名言または閉塞感を1つ以上選択してください');
+        return;
+      }
+
+      const voterName = document.getElementById('voterNameInput').value.trim() || '匿名リスナー';
+      const chosenMeigens = meigenItems.filter(m => selectedMeigens.has(m.id));
+      const chosenHeisokus = heisokuItems.filter(h => selectedHeisokus.has(h.id));
+
+      const payload = {
+        name: voterName,
+        meigens: chosenMeigens,
+        heisokus: chosenHeisokus,
+        customMeigens: chosenMeigens.filter(m => m.is_custom),
+        customHeisokus: chosenHeisokus.filter(h => h.is_custom)
+      };
+
+      if (!gasEndpointUrl) {
+        // Fallback: If GAS URL not set yet, download CSV and prompt setting
+        downloadSelectedCombinedCsv();
+        showToast('送信完了 (CSV保存)', 'スプレッドシートURLが未設定のため、CSVをダウンロードしました！');
+        document.getElementById('submitFormView').classList.add('hidden');
+        document.getElementById('submitSuccessView').classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('submitLoading').classList.remove('hidden');
+      document.getElementById('submitLoading').classList.add('flex');
+
+      try {
+        await fetch(gasEndpointUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        document.getElementById('submitLoading').classList.add('hidden');
+        document.getElementById('submitFormView').classList.add('hidden');
+        document.getElementById('submitSuccessView').classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+
+      } catch (err) {
+        console.error('GAS Submission Error:', err);
+        document.getElementById('submitLoading').classList.add('hidden');
+        downloadSelectedCombinedCsv();
+        showToast('送信エラー', '送信に失敗したためCSVを保存しました');
+        document.getElementById('submitFormView').classList.add('hidden');
+        document.getElementById('submitSuccessView').classList.remove('hidden');
+      }
+    }
+
+    // GAS Settings Modal
+    function openGasSettingsModal() {
+      document.getElementById('gasUrlInput').value = gasEndpointUrl;
+      document.getElementById('gasModal').classList.remove('hidden');
+      document.getElementById('gasModal').classList.add('flex');
+    }
+
+    function closeGasSettingsModal() {
+      document.getElementById('gasModal').classList.add('hidden');
+      document.getElementById('gasModal').classList.remove('flex');
+    }
+
+    function saveGasSettings() {
+      const url = document.getElementById('gasUrlInput').value.trim();
+      gasEndpointUrl = url;
+      localStorage.setItem('touch_radio_gas_url', url);
+      closeGasSettingsModal();
+      showToast('設定保存', 'Google Apps Script連携URLを保存しました！');
     }
 
     // Export Handlers
