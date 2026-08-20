@@ -7,6 +7,7 @@ function doGet(e) {
   var result = {
     meigens: getSheetRecords(ss, "名言マスター"),
     heisokus: getSheetRecords(ss, "閉塞感マスター"),
+    custom_items: getSheetRecords(ss, "自由投稿一覧"),
     comments: getSheetRecords(ss, "コメント・フラグ一覧")
   };
   return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
@@ -18,7 +19,28 @@ function doPost(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var timestamp = new Date();
     
-    // 1. コメント・フラグの投稿（前処理・レビュー）
+    // 1. 自由投稿の共有保存 (全リスナーにリアルタイム同期)
+    if (data.type === "custom_item") {
+      var customSheet = ss.getSheetByName("自由投稿一覧");
+      if (!customSheet) {
+        customSheet = ss.insertSheet("自由投稿一覧");
+        customSheet.appendRow(["受付日時", "ID", "カテゴリ", "発言者/種別", "内容", "詳細・文脈", "関連放送回"]);
+        customSheet.getRange(1, 1, 1, 7).setFontWeight("bold").setBackground("#fdf4ff");
+        customSheet.setFrozenRows(1);
+      }
+      customSheet.appendRow([
+        timestamp,
+        data.item.id || "",
+        data.item.category || (data.category === "heisoku" ? "閉塞感" : "名言"),
+        data.item.speaker || data.item.source || "",
+        data.item.quote || data.item.title || "",
+        data.item.context || data.item.detail || "",
+        data.item.episode || ""
+      ]);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "自由投稿を共有保存しました！" })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 2. コメント・フラグの投稿（前処理・レビュー）
     if (data.type === "comment_flag") {
       var commentSheet = ss.getSheetByName("コメント・フラグ一覧");
       if (!commentSheet) {
@@ -37,11 +59,10 @@ function doPost(e) {
       ]);
       
       updateMasterNote(ss, data.category === "閉塞感" ? "閉塞感マスター" : "名言マスター", data.card_id, data.flag, data.comment, data.name);
-      
       return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "コメント・フラグを記録しました！" })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 2. 閉塞感の表現改善提案
+    // 3. 閉塞感の表現改善提案
     if (data.type === "heisoku_suggestion") {
       var suggSheet = ss.getSheetByName("閉塞感改善提案");
       if (!suggSheet) {
@@ -61,7 +82,7 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "提案を受け付けました！" })).setMimeType(ContentService.MimeType.JSON);
     }
     
-    // 3. 通常の投票送信
+    // 4. 通常の投票送信
     var rawSheet = ss.getSheetByName("投票一覧");
     if (!rawSheet) {
       rawSheet = ss.insertSheet("投票一覧");
