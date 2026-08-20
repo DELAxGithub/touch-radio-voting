@@ -47,8 +47,8 @@
           <button onclick="openCustomItemModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white text-orange-600 hover:bg-orange-50 font-black rounded-xl text-xs sm:text-sm transition shadow">
             <i data-lucide="plus-circle" class="w-4 h-4 stroke-[2.5]"></i> 自由記述で追加
           </button>
-          <button onclick="selectRandomAll()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-300 hover:bg-amber-200 text-slate-900 font-bold rounded-xl text-xs transition shadow">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 自動選択
+          <button onclick="openRandomConfirmModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-300 hover:bg-amber-200 text-slate-900 font-bold rounded-xl text-xs sm:text-sm transition shadow" title="ランダムでおまかせ自動選択">
+            <i data-lucide="shuffle" class="w-4 h-4 text-slate-900"></i> おまかせ自動選択
           </button>
         </div>
       </div>
@@ -57,16 +57,16 @@
 
   <!-- Auto-save reassurance alert banner -->
   <div class="bg-amber-50 border-b border-amber-200 text-amber-900 py-2.5 px-4 shadow-inner">
-    <div class="max-w-6xl mx-auto flex items-center justify-between gap-3 text-xs sm:text-sm">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 text-xs sm:text-sm">
       <div class="flex items-center gap-2">
-        <span class="flex h-2.5 w-2.5 relative">
+        <span class="flex h-2.5 w-2.5 relative shrink-0">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
         </span>
         <span class="font-bold text-amber-950">💾 選択内容は自動保存されています</span>
-        <span class="hidden sm:inline text-amber-800 text-xs">（途中で画面を閉じても後から続きを再開できます！）</span>
+        <span class="hidden md:inline text-amber-800 text-xs">（途中で閉じてもOK！ 60個選ぶのが大変な方は「おまかせ自動選択」から微調整も可能です）</span>
       </div>
-      <div class="text-[11px] text-amber-700 font-medium">
+      <div class="text-[11px] text-amber-700 font-medium self-end sm:self-auto">
         <span id="savedTimeNotice">自動保存中</span>
       </div>
     </div>
@@ -202,6 +202,28 @@
       <button onclick="openSubmitModal()" class="flex-1 py-2.5 px-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black text-xs rounded-xl shadow-lg flex items-center justify-center gap-1.5">
         <i data-lucide="send" class="w-4 h-4"></i> 投票を送信
       </button>
+    </div>
+  </div>
+
+  <!-- Random Auto-Select Confirmation Modal (おまかせ選択の説明モーダル) -->
+  <div id="randomModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 text-left">
+      <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center mb-3">
+        <i data-lucide="shuffle" class="w-6 h-6"></i>
+      </div>
+      <h3 class="text-base sm:text-lg font-black text-slate-800 mb-1">おまかせ自動選択とは？</h3>
+      <p class="text-xs text-slate-600 leading-relaxed mb-4">
+        名言60個・閉塞感60個を<strong>ランダムに自動で選択（仮埋め）</strong>します。<br><br>
+        「60個を1から選ぶのは大変…」「まず枠を埋めてから、好きなものを入れ替えたい」という時におすすめです！<br>
+        <span class="text-amber-700 font-bold">※ このボタンを押しても勝手に送信されることはありません。後から自由に解除・変更できます。</span>
+      </p>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeRandomConfirmModal()" class="px-4 py-2 text-xs font-semibold text-slate-500">キャンセル</button>
+        <button type="button" onclick="executeRandomSelect()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs rounded-xl shadow flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-4 h-4"></i> 60個ずつランダム選択する
+        </button>
+      </div>
     </div>
   </div>
 
@@ -450,7 +472,6 @@
     let customModalType = 'meigen';
     let currentCommentCard = null;
 
-    // Synchronize custom items & comments from Google Spreadsheets in background
     async function syncRemoteData() {
       if (!gasEndpointUrl) return;
       try {
@@ -458,7 +479,6 @@
         if (!res.ok) return;
         const remote = await res.json();
         
-        // Sync shared custom items
         if (remote.custom_items && remote.custom_items.length > 0) {
           remote.custom_items.forEach(c => {
             const isHeisoku = c['カテゴリ'] === '閉塞感' || c.category === 'heisoku';
@@ -491,7 +511,6 @@
           });
         }
 
-        // Sync shared comments
         if (remote.comments && remote.comments.length > 0) {
           remote.comments.forEach(cm => {
             const cardId = cm['対象ID'] || cm.card_id;
@@ -812,6 +831,34 @@
       if (window.lucide) lucide.createIcons();
     }
 
+    // Modal for Random Auto Selection
+    function openRandomConfirmModal() {
+      document.getElementById('randomModal').classList.remove('hidden');
+      document.getElementById('randomModal').classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeRandomConfirmModal() {
+      document.getElementById('randomModal').classList.add('hidden');
+      document.getElementById('randomModal').classList.remove('flex');
+    }
+
+    function executeRandomSelect() {
+      selectedMeigens.clear();
+      selectedHeisokus.clear();
+
+      const shufM = [...meigenItems].sort(() => 0.5 - Math.random());
+      shufM.slice(0, MAX_MEIGEN).forEach(m => selectedMeigens.add(m.id));
+
+      const shufH = [...heisokuItems].sort(() => 0.5 - Math.random());
+      shufH.slice(0, MAX_HEISOKU).forEach(h => selectedHeisokus.add(h.id));
+
+      saveSelectionState();
+      updateUI();
+      closeRandomConfirmModal();
+      showToast('おまかせ選択完了', `名言60個・閉塞感60個を選択しました！ここから好きなカードに入れ替え可能です。`);
+    }
+
     function openCommentModal(cardId) {
       const isMeigen = currentMode === 'meigen';
       const items = isMeigen ? meigenItems : heisokuItems;
@@ -949,7 +996,6 @@
       localStorage.setItem('touch_radio_custom_items', JSON.stringify(savedCustom));
       saveSelectionState();
 
-      // Post custom item to Google Apps Script for global sharing across all users
       if (gasEndpointUrl) {
         try {
           fetch(gasEndpointUrl, {
@@ -962,9 +1008,7 @@
               item: newItem
             })
           });
-        } catch (err) {
-          console.error('GAS custom item sync error:', err);
-        }
+        } catch (err) {}
       }
 
       document.getElementById('customContentInput').value = '';
@@ -983,21 +1027,6 @@
       saveSelectionState();
       updateUI();
       showToast('クリア', '現在の選択をクリアしました');
-    }
-
-    function selectRandomAll() {
-      selectedMeigens.clear();
-      selectedHeisokus.clear();
-
-      const shufM = [...meigenItems].sort(() => 0.5 - Math.random());
-      shufM.slice(0, MAX_MEIGEN).forEach(m => selectedMeigens.add(m.id));
-
-      const shufH = [...heisokuItems].sort(() => 0.5 - Math.random());
-      shufH.slice(0, MAX_HEISOKU).forEach(h => selectedHeisokus.add(h.id));
-
-      saveSelectionState();
-      updateUI();
-      showToast('自動選択完了', `名言${selectedMeigens.size}個、閉塞感${selectedHeisokus.size}個を選択しました！`);
     }
 
     function openSelectedModal() {
