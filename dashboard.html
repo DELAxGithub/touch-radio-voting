@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>たっちレディオ 投票・共同編集 管理ダッシュボード</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans JP', 'M PLUS Rounded 1c', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-20">
+
+  <!-- Header -->
+  <header class="bg-slate-800/90 backdrop-blur-md border-b border-slate-700 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-xl">
+          <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-black text-white">たっちレディオ 投票状況ダッシュボード</h1>
+            <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full font-mono">ADMIN ONLY</span>
+          </div>
+          <p class="text-xs text-slate-400">リアルタイム集計・自由投稿・レビュー監視</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="fetchData()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl transition shadow">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="refreshIcon"></i>
+          <span>更新</span>
+        </button>
+        <span class="text-[11px] text-slate-400 hidden sm:inline" id="lastUpdatedTime">最終更新: 未取得</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- Top KPI Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider">総投票数 (送信数)</span>
+          <i data-lucide="users" class="w-4 h-4 text-orange-400"></i>
+        </div>
+        <div class="text-2xl sm:text-3xl font-black text-white" id="kpiTotalVotes">-</div>
+        <div class="text-[11px] text-slate-400 mt-1" id="kpiRecentVoter">最新: -</div>
+      </div>
+
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider">名言 累計得票数</span>
+          <i data-lucide="message-square-quote" class="w-4 h-4 text-amber-400"></i>
+        </div>
+        <div class="text-2xl sm:text-3xl font-black text-amber-400" id="kpiMeigenVotes">-</div>
+        <div class="text-[11px] text-slate-400 mt-1" id="kpiMeigenTop">1位: -</div>
+      </div>
+
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider">閉塞感 累計得票数</span>
+          <i data-lucide="cloud-rain" class="w-4 h-4 text-teal-400"></i>
+        </div>
+        <div class="text-2xl sm:text-3xl font-black text-teal-400" id="kpiHeisokuVotes">-</div>
+        <div class="text-[11px] text-slate-400 mt-1" id="kpiHeisokuTop">1位: -</div>
+      </div>
+
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider">自由投稿 / メモ件数</span>
+          <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
+        </div>
+        <div class="text-2xl sm:text-3xl font-black text-purple-400" id="kpiCustomCount">-</div>
+        <div class="text-[11px] text-slate-400 mt-1" id="kpiCommentCount">メモ: - 件</div>
+      </div>
+
+    </div>
+
+    <!-- Rankings Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Meigen Ranking -->
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 flex flex-col">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-700 mb-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="award" class="w-5 h-5 text-amber-400"></i>
+            名言 得票数ランキング
+          </h2>
+          <span class="text-xs text-slate-400" id="meigenRankCount">0 件</span>
+        </div>
+        <div class="space-y-2.5 overflow-y-auto max-h-[500px] custom-scrollbar pr-1" id="meigenRankingContainer">
+          <div class="text-center py-8 text-slate-500 text-xs">データ読み込み中...</div>
+        </div>
+      </div>
+
+      <!-- Heisoku Ranking -->
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 flex flex-col">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-700 mb-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="award" class="w-5 h-5 text-teal-400"></i>
+            閉塞感 得票数ランキング
+          </h2>
+          <span class="text-xs text-slate-400" id="heisokuRankCount">0 件</span>
+        </div>
+        <div class="space-y-2.5 overflow-y-auto max-h-[500px] custom-scrollbar pr-1" id="heisokuRankingContainer">
+          <div class="text-center py-8 text-slate-500 text-xs">データ読み込み中...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Real-time Activity Logs (2 Columns) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Shared Custom Items (自由投稿タイムライン) -->
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 flex flex-col">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-700 mb-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-5 h-5 text-purple-400"></i>
+            リスナーからの自由投稿一覧
+          </h2>
+          <span class="text-xs text-slate-400" id="customListCount">0 件</span>
+        </div>
+        <div class="space-y-2.5 overflow-y-auto max-h-[400px] custom-scrollbar pr-1" id="customListContainer">
+          <div class="text-center py-8 text-slate-500 text-xs">データ読み込み中...</div>
+        </div>
+      </div>
+
+      <!-- Comments & Flags (指摘・メモ一覧) -->
+      <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 flex flex-col">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-700 mb-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="message-square-plus" class="w-5 h-5 text-orange-400"></i>
+            カードへのメモ・フラグ一覧
+          </h2>
+          <span class="text-xs text-slate-400" id="commentListCount">0 件</span>
+        </div>
+        <div class="space-y-2.5 overflow-y-auto max-h-[400px] custom-scrollbar pr-1" id="commentListContainer">
+          <div class="text-center py-8 text-slate-500 text-xs">データ読み込み中...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recent Raw Votes Table -->
+    <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-700 mb-4">
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="list" class="w-5 h-5 text-blue-400"></i>
+          投票送信ログ（直近の投票）
+        </h2>
+        <span class="text-xs text-slate-400" id="rawVotesCount">0 件</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-900/50 text-slate-400 uppercase font-bold text-[10px]">
+            <tr>
+              <th class="p-2.5">受付日時</th>
+              <th class="p-2.5">たっちネーム</th>
+              <th class="p-2.5">名言選択数</th>
+              <th class="p-2.5">閉塞感選択数</th>
+              <th class="p-2.5">自由投稿</th>
+            </tr>
+          </thead>
+          <tbody id="rawVotesTableBody" class="divide-y divide-slate-700/50">
+            <tr>
+              <td colspan="5" class="text-center py-8 text-slate-500">データ読み込み中...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxFCA_TW5wpVlgYY1gVg5fae-rGjoPWikGf17ivQLPaaJAHdjY0GZLJ6nD2448ErHu0bA/exec';
+
+    async function fetchData() {
+      const refreshIcon = document.getElementById('refreshIcon');
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
+
+      try {
+        const res = await fetch(GAS_URL);
+        const data = await res.json();
+        
+        renderDashboard(data);
+
+        const now = new Date();
+        document.getElementById('lastUpdatedTime').innerText = `最終更新: ${now.toLocaleTimeString()}`;
+      } catch (err) {
+        console.error('Fetch error:', err);
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+      }
+    }
+
+    function renderDashboard(data) {
+      const votes = data.votes || [];
+      const meigens = (data.meigen_summary || []).sort((a, b) => (b['得票数'] || 0) - (a['得票数'] || 0));
+      const heisokus = (data.heisoku_summary || []).sort((a, b) => (b['得票数'] || 0) - (a['得票数'] || 0));
+      const customs = data.custom_items || [];
+      const comments = data.comments || [];
+
+      // KPIs
+      document.getElementById('kpiTotalVotes').innerText = `${votes.length} 票`;
+      if (votes.length > 0) {
+        const latest = votes[votes.length - 1];
+        document.getElementById('kpiRecentVoter').innerText = `最新: ${latest['お名前/ニックネーム'] || '匿名'} (${formatDate(latest['受付日時'])})`;
+      }
+
+      const totalMVotes = meigens.reduce((acc, m) => acc + (Number(m['得票数']) || 0), 0);
+      document.getElementById('kpiMeigenVotes').innerText = `${totalMVotes} 票`;
+      if (meigens.length > 0) {
+        document.getElementById('kpiMeigenTop').innerText = `1位: ${meigens[0]['内容']} (${meigens[0]['得票数']}票)`;
+      }
+
+      const totalHVotes = heisokus.reduce((acc, h) => acc + (Number(h['得票数']) || 0), 0);
+      document.getElementById('kpiHeisokuVotes').innerText = `${totalHVotes} 票`;
+      if (heisokus.length > 0) {
+        document.getElementById('kpiHeisokuTop').innerText = `1位: ${heisokus[0]['内容']} (${heisokus[0]['得票数']}票)`;
+      }
+
+      document.getElementById('kpiCustomCount').innerText = `${customs.length} 件`;
+      document.getElementById('kpiCommentCount').innerText = `メモ: ${comments.length} 件`;
+
+      // Render Meigen Ranking
+      renderRankingList('meigenRankingContainer', meigens, 'amber', 'meigenRankCount');
+
+      // Render Heisoku Ranking
+      renderRankingList('heisokuRankingContainer', heisokus, 'teal', 'heisokuRankCount');
+
+      // Render Custom Items
+      renderCustomList(customs);
+
+      // Render Comments
+      renderCommentList(comments);
+
+      // Render Raw Votes Table
+      renderRawVotesTable(votes);
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderRankingList(containerId, items, color, countId) {
+      const container = document.getElementById(containerId);
+      document.getElementById(countId).innerText = `${items.length} 項目`;
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">まだ投票データがありません</div>`;
+        return;
+      }
+
+      items.forEach((item, idx) => {
+        const votes = Number(item['得票数']) || 0;
+        const rank = idx + 1;
+        const rankBadge = rank === 1 ? 'bg-amber-400 text-slate-950 font-black' 
+                        : rank === 2 ? 'bg-slate-300 text-slate-950 font-black'
+                        : rank === 3 ? 'bg-amber-700 text-white font-black'
+                        : 'bg-slate-700 text-slate-300 font-bold';
+
+        const row = document.createElement('div');
+        row.className = 'p-3 bg-slate-900/60 rounded-xl border border-slate-700/60 flex items-start justify-between gap-3';
+        row.innerHTML = `
+          <div class="flex items-start gap-2.5 flex-1">
+            <span class="w-6 h-6 rounded-lg ${rankBadge} flex items-center justify-center text-xs shrink-0">${rank}</span>
+            <div>
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="text-[10px] font-mono text-slate-400">#${item['項目ID'] || ''}</span>
+                ${item['発言者/種別'] ? `<span class="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.2 rounded border border-slate-700">${item['発言者/種別']}</span>` : ''}
+              </div>
+              <p class="text-xs font-bold text-white leading-snug">${item['内容'] || ''}</p>
+            </div>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="text-base font-black text-${color}-400">${votes}</span>
+            <span class="text-[10px] text-slate-400 block">票</span>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderCustomList(items) {
+      const container = document.getElementById('customListContainer');
+      document.getElementById('customListCount').innerText = `${items.length} 件`;
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">まだ自由投稿はありません</div>`;
+        return;
+      }
+
+      [...items].reverse().forEach(c => {
+        const isHeisoku = c['カテゴリ'] === '閉塞感';
+        const row = document.createElement('div');
+        row.className = 'p-3 bg-slate-900/60 rounded-xl border border-slate-700/60 text-left';
+        row.innerHTML = `
+          <div class="flex items-center justify-between gap-2 mb-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-mono text-purple-400 font-bold">#${c['ID'] || ''}</span>
+              <span class="text-[10px] ${isHeisoku ? 'bg-teal-900/60 text-teal-300 border-teal-700' : 'bg-amber-900/60 text-amber-300 border-amber-700'} px-1.5 py-0.2 rounded border font-bold">${c['カテゴリ'] || '名言'}</span>
+              <span class="text-[10px] text-slate-400">${c['発言者/種別'] || ''}</span>
+            </div>
+            <span class="text-[10px] text-slate-500">${formatDate(c['受付日時'])}</span>
+          </div>
+          <p class="text-xs font-bold text-white mb-1">${c['内容'] || ''}</p>
+          ${c['詳細・文脈'] ? `<p class="text-[11px] text-slate-400 bg-slate-800/80 p-2 rounded-lg border border-slate-700/40 leading-relaxed">${c['詳細・文脈']}</p>` : ''}
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderCommentList(items) {
+      const container = document.getElementById('commentListContainer');
+      document.getElementById('commentListCount').innerText = `${items.length} 件`;
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">まだメモ・フラグはありません</div>`;
+        return;
+      }
+
+      [...items].reverse().forEach(cm => {
+        const row = document.createElement('div');
+        row.className = 'p-3 bg-slate-900/60 rounded-xl border border-slate-700/60 text-left';
+        row.innerHTML = `
+          <div class="flex items-center justify-between gap-2 mb-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-mono text-orange-400 font-bold">#${cm['対象ID'] || ''}</span>
+              <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.2 rounded font-bold">${cm['フラグ'] || 'メモ'}</span>
+              <span class="text-[10px] text-slate-400">${cm['投稿者ネーム'] || '匿名'}</span>
+            </div>
+            <span class="text-[10px] text-slate-500">${formatDate(cm['受付日時'])}</span>
+          </div>
+          <p class="text-xs text-slate-200 leading-relaxed">${cm['コメント・メモ'] || '(コメントなし)'}</p>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderRawVotesTable(votes) {
+      const tbody = document.getElementById('rawVotesTableBody');
+      document.getElementById('rawVotesCount').innerText = `${votes.length} 件`;
+      tbody.innerHTML = '';
+
+      if (votes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-500">まだ投票が届いていません</td></tr>`;
+        return;
+      }
+
+      [...votes].reverse().slice(0, 15).forEach(v => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-750 transition';
+        tr.innerHTML = `
+          <td class="p-2.5 text-slate-400 font-mono">${formatDate(v['受付日時'])}</td>
+          <td class="p-2.5 font-bold text-white">${v['お名前/ニックネーム'] || '匿名'}</td>
+          <td class="p-2.5 text-amber-400 font-bold">${v['名言選択数'] || 0} 個</td>
+          <td class="p-2.5 text-teal-400 font-bold">${v['閉塞感選択数'] || 0} 個</td>
+          <td class="p-2.5 text-slate-400 max-w-xs truncate">${v['自由投稿名言'] || v['自由投稿閉塞感'] ? 'あり' : 'なし'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function formatDate(dStr) {
+      if (!dStr) return '';
+      try {
+        const d = new Date(dStr);
+        if (isNaN(d.getTime())) return dStr;
+        return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      } catch (e) {
+        return dStr;
+      }
+    }
+
+    // Auto-refresh every 30 seconds
+    fetchData();
+    setInterval(fetchData, 30000);
+  </script>
+</body>
+</html>

@@ -5,8 +5,9 @@
 function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var result = {
-    meigens: getSheetRecords(ss, "名言マスター"),
-    heisokus: getSheetRecords(ss, "閉塞感マスター"),
+    votes: getSheetRecords(ss, "投票一覧"),
+    meigen_summary: getSheetRecords(ss, "名言集計"),
+    heisoku_summary: getSheetRecords(ss, "閉塞感集計"),
     custom_items: getSheetRecords(ss, "自由投稿一覧"),
     comments: getSheetRecords(ss, "コメント・フラグ一覧")
   };
