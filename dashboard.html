@@ -35,9 +35,9 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base sm:text-lg font-black text-white tracking-tight">たっちレディオ 60選定ダッシュボード</h1>
-            <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-mono font-bold">入稿管理エディション</span>
+            <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-mono font-bold">即時プレビュー版</span>
           </div>
-          <p class="text-xs text-slate-400">重複統合・カードサイズ要約・共同編集・入稿データ生成</p>
+          <p class="text-xs text-slate-400">カード文言即時反映・発言者非表示（フレーズ直球）・共同編集シート連携</p>
         </div>
       </div>
 
@@ -258,7 +258,7 @@
 
   </main>
 
-  <!-- ==================== SUBMISSION DATA EXPORT MODAL (入稿データ出力) ==================== -->
+  <!-- ==================== SUBMISSION DATA EXPORT MODAL ==================== -->
   <div id="printExportModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full p-6 space-y-5 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
       
@@ -268,17 +268,14 @@
             <i data-lucide="printer" class="w-5 h-5 text-amber-400"></i>
             カードゲーム入稿データの出力
           </h3>
-          <p class="text-xs text-slate-400 mt-0.5">印刷所・Excel・Illustrator・PDF用の入稿データ形式を選択してください</p>
+          <p class="text-xs text-slate-400 mt-0.5">印刷所・Excel・Illustrator・PDF用の入稿データ形式を選択してください（発言者印字なし）</p>
         </div>
         <button onclick="closePrintExportModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <!-- Quick Action Cards Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-shrink-0">
-        
-        <!-- CSV Meigen -->
         <button onclick="downloadCSV('meigen')" class="p-3 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 rounded-xl text-left transition space-y-1 group">
           <div class="flex items-center justify-between">
             <span class="text-xs font-black text-amber-400 group-hover:text-amber-300 flex items-center gap-1.5">
@@ -286,10 +283,9 @@
             </span>
             <i data-lucide="download" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
           </div>
-          <p class="text-[11px] text-slate-400 leading-tight">カード印刷テキスト・発言者・原文入りの入稿用CSV</p>
+          <p class="text-[11px] text-slate-400 leading-tight">カード印刷テキスト・文字数・原文入りの入稿用CSV</p>
         </button>
 
-        <!-- CSV Heisoku -->
         <button onclick="downloadCSV('heisoku')" class="p-3 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 rounded-xl text-left transition space-y-1 group">
           <div class="flex items-center justify-between">
             <span class="text-xs font-black text-teal-400 group-hover:text-teal-300 flex items-center gap-1.5">
@@ -300,7 +296,6 @@
           <p class="text-[11px] text-slate-400 leading-tight">閉塞感60選の入稿用CSV</p>
         </button>
 
-        <!-- CSV Combined 120 -->
         <button onclick="downloadCSV('combined')" class="p-3 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 rounded-xl text-left transition space-y-1 group">
           <div class="flex items-center justify-between">
             <span class="text-xs font-black text-purple-400 group-hover:text-purple-300 flex items-center gap-1.5">
@@ -308,17 +303,15 @@
             </span>
             <i data-lucide="download" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white"></i>
           </div>
-          <p class="text-[11px] text-slate-400 leading-tight">名言＋閉塞感を1つに束ねた全入稿データ</p>
+          <p class="text-[11px] text-slate-400 leading-tight">名言＋閉塞感を束ねた全入稿データ</p>
         </button>
-
       </div>
 
-      <!-- Preview Printable Sheet Button -->
       <div class="p-3.5 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-transparent border border-amber-500/30 rounded-xl flex items-center justify-between gap-3 flex-shrink-0">
         <div>
           <span class="text-xs font-black text-amber-300 flex items-center gap-1.5">
             <i data-lucide="layout-grid" class="w-4 h-4"></i>
-            A4カード印刷プレビュー（PDF出力用）
+            A4カード印刷プレビュー（発言者印字なし / フレーズのみ）
           </span>
           <p class="text-[11px] text-slate-400 mt-0.5">実寸カード型で一覧表示し、ブラウザの「印刷」からA4シートにPDF保存できます</p>
         </div>
@@ -328,7 +321,6 @@
         </button>
       </div>
 
-      <!-- Text / TSV Copy Section -->
       <div class="space-y-2 flex-1 flex flex-col min-h-0">
         <div class="flex items-center justify-between text-xs font-bold">
           <div class="flex gap-2">
@@ -344,7 +336,7 @@
 
       <div class="flex items-center justify-between pt-2 border-t border-slate-800 flex-shrink-0">
         <div class="text-[11px] text-slate-500">
-          ※ 編集した「カード印刷テキスト」が自動反映されます
+          ※ 画面上で編集した「カード印刷テキスト」が1文字単位で即時反映されます
         </div>
         <button onclick="copyPrintExportText()" id="copyPrintBtn" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow">
           <i data-lucide="copy" class="w-4 h-4"></i>
@@ -361,21 +353,16 @@
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbxFCA_TW5wpVlgYY1gVg5fae-rGjoPWikGf17ivQLPaaJAHdjY0GZLJ6nD2448ErHu0bA/exec';
     const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1yQcuYydjrkKTB91LD3DRJ5fF4nsF1a0ta3_432NNs8U/edit?gid=1400495461#gid=1400495461';
 
-    // State
     let currentTab = 'meigen';
     let meigenList = INITIAL_DATA.meigen || [];
     let heisokuList = INITIAL_DATA.heisoku || [];
     let clusters = INITIAL_DATA.clusters || [];
     let totalVoters = INITIAL_DATA.total_voters || 45;
 
-    // Selections (Set of texts or keys)
     let selectedMeigen = new Set();
     let selectedHeisoku = new Set();
-
-    // Custom Short Texts (key: original text -> edited card text)
     let customShortTexts = {};
 
-    // Filters
     let meigenSpeakerFilter = 'all';
     let meigenLengthFilter = 'all';
     let onlySelectedFilter = { meigen: false, heisoku: false };
@@ -416,13 +403,31 @@
       return customShortTexts[originalText] !== undefined ? customShortTexts[originalText] : (defaultShort || originalText);
     }
 
-    function updateCardText(originalText, newText) {
+    // Real-time Input Handler: 即時反映
+    let saveTimeout = null;
+    function handleRealtimeInput(originalText, newText, cardId) {
       customShortTexts[originalText] = newText.trim();
-      persistSelections();
-      renderMeigenCards();
+      
+      // 1. 同カード内のミニプレビューを即時書き換え
+      const previewEl = document.getElementById(`preview-text-${cardId}`);
+      if (previewEl) {
+        previewEl.innerText = newText.trim() || originalText;
+      }
+
+      // 2. 同カード内の文字数バッジを即時書き換え
+      const badgeEl = document.getElementById(`card-len-badge-${cardId}`);
+      if (badgeEl) {
+        badgeEl.innerHTML = getLengthBadge(newText.trim().length);
+      }
+
+      // 3. debounceでlocalStorageに保存 (100ms)
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        localStorage.setItem('touch_radio_custom_short_texts', JSON.stringify(customShortTexts));
+      }, 100);
     }
 
-    function resetCardText(originalText, defaultText) {
+    function resetCardText(originalText, defaultText, cardId) {
       delete customShortTexts[originalText];
       persistSelections();
       renderMeigenCards();
@@ -630,7 +635,7 @@
       }
 
       let html = '';
-      filtered.forEach(m => {
+      filtered.forEach((m, idx) => {
         const isSelected = selectedMeigen.has(m.text);
         const speakerColor = m.speaker.includes('田淵') ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' :
                              m.speaker.includes('田代') ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10' :
@@ -645,9 +650,10 @@
 
         const cardText = getEffectiveCardText(m.text, m.short_text);
         const isModified = (cardText !== m.text);
-        const cardLenBadge = isModified ? getLengthBadge(cardText.length) : '';
+        const cardLenBadge = getLengthBadge(cardText.length);
 
         const escapedText = m.text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const uniqueCardId = `m-${idx}`;
 
         html += `
           <div class="rounded-2xl border transition-all ${cardBorder} p-4 space-y-3">
@@ -664,7 +670,7 @@
                   <span class="text-slate-300 font-mono text-xs font-bold">${m.unique_votes}人支持 <span class="text-slate-500 font-normal">(${m.vote_ratio}%)</span></span>
                   <span class="text-slate-600 text-[10px] font-mono">[${m.ids.join('/')}]</span>
                   ${clusterTag}
-                  ${origLenBadge}
+                  <span id="orig-len-badge-${uniqueCardId}">${origLenBadge}</span>
                 </div>
               </div>
 
@@ -685,35 +691,41 @@
               ` : ''}
             </div>
 
+            <!-- Card Optimized / Real-time Editable Section -->
             <div class="pl-9 pr-2 pt-2 border-t border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
                   <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400/90 flex items-center gap-1">
-                    <i data-lucide="credit-card" class="w-3 h-3"></i> カード印刷テキスト
+                    <i data-lucide="credit-card" class="w-3 h-3"></i> カード印刷テキスト（フレーズ直球）
                   </span>
-                  ${isModified ? `<span class="text-[10px] bg-amber-500/10 text-amber-300 border border-amber-500/30 px-1.5 py-0.2 rounded font-bold">要約・最適化済</span>` : ''}
-                  ${cardLenBadge}
+                  <span id="card-len-badge-${uniqueCardId}">${cardLenBadge}</span>
+                  <span class="text-[9px] text-slate-500 font-normal">※ 打ち替えると右側の見本と入稿データに即時反映</span>
                 </div>
                 
+                <!-- Real-time Input oninput -->
                 <div class="flex items-center gap-2">
                   <input type="text" value="${cardText.replace(/"/g, '&quot;')}" 
-                    onchange="updateCardText('${escapedText}', this.value)"
+                    oninput="handleRealtimeInput('${escapedText}', this.value, '${uniqueCardId}')"
                     placeholder="カード用の短縮テキストを入力..."
                     class="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-100 font-bold focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
-                  ${isModified ? `
-                    <button onclick="resetCardText('${escapedText}')" class="p-1.5 text-slate-500 hover:text-slate-300 text-[10px] rounded-lg transition" title="原文に戻す">
-                      <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                    </button>
-                  ` : ''}
+                  <button onclick="resetCardText('${escapedText}', '${m.short_text.replace(/'/g, "\\'")}', '${uniqueCardId}')" class="p-1.5 text-slate-500 hover:text-slate-300 text-[10px] rounded-lg transition" title="元に戻す">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  </button>
                 </div>
               </div>
 
-              <div class="hidden md:flex flex-col items-center justify-center p-2.5 bg-slate-950 border border-slate-800 rounded-xl w-56 text-center shadow-inner">
-                <span class="text-[9px] text-slate-500 font-mono mb-0.5">CARD PREVIEW</span>
-                <span class="text-xs font-black text-white line-clamp-2 leading-snug">
+              <!-- Card Preview Miniature: 発言者なし・フレーズ直球 -->
+              <div class="hidden md:flex flex-col items-center justify-center p-3 bg-slate-950 border border-slate-800 rounded-xl w-56 text-center shadow-inner">
+                <div class="flex items-center justify-between w-full text-[8px] text-amber-500/80 font-mono mb-1 border-b border-slate-900 pb-0.5">
+                  <span>CARD PREVIEW</span>
+                  <span>#${m.rank}</span>
+                </div>
+                <span id="preview-text-${uniqueCardId}" class="text-xs font-black text-white line-clamp-3 leading-snug break-words">
                   ${cardText}
                 </span>
-                <span class="text-[9px] text-slate-400 mt-1">${m.speaker}</span>
+                <div class="text-[8px] text-slate-600 font-mono mt-1 pt-0.5 border-t border-slate-900 w-full text-right">
+                  たっちレディオ
+                </div>
               </div>
 
             </div>
@@ -872,39 +884,39 @@
       const textarea = document.getElementById('printExportTextarea');
 
       if (fmt === 'tsv') {
-        let out = "通し番号\tカード種別\t発言者/カテゴリ\tカード印刷テキスト\t文字数\t原文テキスト\t支持者数\t元ID\n";
+        let out = "通し番号\tカード種別\tカード印刷テキスト\t文字数\t原文テキスト\t支持者数\t元ID\n";
         let no = 1;
         meigenSelected.forEach(m => {
           const cardText = getEffectiveCardText(m.text, m.short_text);
-          out += `${no++}\t名言カード\t${m.speaker}\t${cardText}\t${cardText.length}\t${m.text}\t${m.unique_votes}人\t${m.ids.join('/')}\n`;
+          out += `${no++}\t名言カード\t${cardText}\t${cardText.length}\t${m.text}\t${m.unique_votes}人\t${m.ids.join('/')}\n`;
         });
         heisokuSelected.forEach(h => {
-          out += `${no++}\t閉塞感カード\t${h.category}\t${h.text}\t${h.text.length}\t${h.text}\t${h.unique_votes}人\t${h.ids.join('/')}\n`;
+          out += `${no++}\t閉塞感カード\t${h.text}\t${h.text.length}\t${h.text}\t${h.unique_votes}人\t${h.ids.join('/')}\n`;
         });
         textarea.value = out;
       } else if (fmt === 'markdown') {
-        let out = "### たっちレディオ カード入稿データ\n\n";
-        out += "| No | 種別 | 発言者/カテゴリ | カード印刷テキスト | 文字数 | 原文 |\n|:---:|:---:|:---:|:---|:---:|:---|\n";
+        let out = "### たっちレディオ カード入稿データ (発言者なし・フレーズ直球)\n\n";
+        out += "| No | 種別 | カード印刷テキスト | 文字数 | 原文 |\n|:---:|:---:|:---|:---:|:---|\n";
         let no = 1;
         meigenSelected.forEach(m => {
           const cardText = getEffectiveCardText(m.text, m.short_text);
-          out += `| ${no++} | 名言 | ${m.speaker} | **${cardText}** | ${cardText.length} | ${m.text} |\n`;
+          out += `| ${no++} | 名言 | **${cardText}** | ${cardText.length} | ${m.text} |\n`;
         });
         heisokuSelected.forEach(h => {
-          out += `| ${no++} | 閉塞感 | ${h.category} | **${h.text}** | ${h.text.length} | - |\n`;
+          out += `| ${no++} | 閉塞感 | **${h.text}** | ${h.text.length} | - |\n`;
         });
         textarea.value = out;
       } else if (fmt === 'json') {
         const allList = [];
         let no = 1;
         meigenSelected.forEach(m => {
+          const cardText = getEffectiveCardText(m.text, m.short_text);
           allList.push({
             card_no: no++,
             card_type: 'meigen',
-            speaker: m.speaker,
-            card_text: getEffectiveCardText(m.text, m.short_text),
+            card_text: cardText,
             original_text: m.text,
-            length: getEffectiveCardText(m.text, m.short_text).length,
+            length: cardText.length,
             votes: m.unique_votes,
             ids: m.ids
           });
@@ -938,26 +950,25 @@
       }, 2000);
     }
 
-    // CSV Download Function (BOM-UTF8 for Excel compatibility)
     function downloadCSV(type) {
       const meigenSelected = meigenList.filter(m => selectedMeigen.has(m.text));
       const heisokuSelected = heisokuList.filter(h => selectedHeisoku.has(h.text));
 
-      let rows = [["通し番号", "カード種別", "発言者/カテゴリ", "カード印刷テキスト", "文字数", "原文テキスト", "支持者数", "元ID"]];
+      let rows = [["通し番号", "カード種別", "カード印刷テキスト", "文字数", "原文テキスト", "支持者数", "元ID"]];
       let filename = "touch_radio_cards.csv";
 
       let no = 1;
       if (type === 'meigen' || type === 'combined') {
         meigenSelected.forEach(m => {
           const cardText = getEffectiveCardText(m.text, m.short_text);
-          rows.push([no++, "名言カード", m.speaker, cardText, cardText.length, m.text, m.unique_votes, m.ids.join('/')]);
+          rows.push([no++, "名言カード", cardText, cardText.length, m.text, m.unique_votes, m.ids.join('/')]);
         });
         filename = "touch_radio_meigen_60.csv";
       }
       if (type === 'heisoku' || type === 'combined') {
         if (type === 'heisoku') no = 1;
         heisokuSelected.forEach(h => {
-          rows.push([no++, "閉塞感カード", h.category, h.text, h.text.length, h.text, h.unique_votes, h.ids.join('/')]);
+          rows.push([no++, "閉塞感カード", h.text, h.text.length, h.text, h.unique_votes, h.ids.join('/')]);
         });
         if (type === 'heisoku') filename = "touch_radio_heisoku_60.csv";
       }
@@ -973,7 +984,7 @@
       link.click();
     }
 
-    // Open A4 Printable HTML Preview Window
+    // Open A4 Printable HTML Preview Window (発言者印字なし・フレーズ直球)
     function openPrintPreviewWindow() {
       const meigenSelected = meigenList.filter(m => selectedMeigen.has(m.text));
       const heisokuSelected = heisokuList.filter(h => selectedHeisoku.has(h.text));
@@ -981,20 +992,20 @@
       let cardsHtml = '';
       let cardIndex = 1;
 
-      // Meigen Cards
+      // Meigen Cards (発言者なし)
       meigenSelected.forEach(m => {
         const cardText = getEffectiveCardText(m.text, m.short_text);
         cardsHtml += `
           <div class="card card-meigen">
             <div class="card-header">
-              <span class="card-badge meigen-badge">名言 #${cardIndex++}</span>
-              <span class="speaker">${m.speaker}</span>
+              <span class="card-badge meigen-badge">名言カード</span>
+              <span class="card-serial">#${cardIndex++}</span>
             </div>
             <div class="card-body">
               <p class="quote-text">${cardText}</p>
             </div>
             <div class="card-footer">
-              <span>たっちレディオ CARD GAME</span>
+              <span>たっちレディオ</span>
               <span class="card-id">${m.ids.join('/')}</span>
             </div>
           </div>
@@ -1006,14 +1017,14 @@
         cardsHtml += `
           <div class="card card-heisoku">
             <div class="card-header">
-              <span class="card-badge heisoku-badge">閉塞感 #${cardIndex++}</span>
-              <span class="speaker">${h.category}</span>
+              <span class="card-badge heisoku-badge">閉塞感カード</span>
+              <span class="card-serial">#${cardIndex++}</span>
             </div>
             <div class="card-body">
               <p class="quote-text">${h.text}</p>
             </div>
             <div class="card-footer">
-              <span>たっちレディオ CARD GAME</span>
+              <span>たっちレディオ</span>
               <span class="card-id">${h.ids.join('/')}</span>
             </div>
           </div>
@@ -1025,7 +1036,7 @@
         <html lang="ja">
         <head>
           <meta charset="UTF-8">
-          <title>たっちレディオ カード印刷プレビュー (A4入稿用)</title>
+          <title>たっちレディオ カード印刷プレビュー (A4入稿用・発言者なし)</title>
           <style>
             @page { size: A4; margin: 10mm; }
             body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; margin: 0; padding: 10px; background: #f8fafc; color: #0f172a; }
@@ -1036,12 +1047,12 @@
             .card-meigen { border-color: #f59e0b; }
             .card-heisoku { border-color: #14b8a6; }
             .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 9px; font-weight: bold; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
-            .card-badge { padding: 2px 6px; border-radius: 4px; color: #fff; }
+            .card-badge { padding: 2px 6px; border-radius: 4px; color: #fff; font-size: 9px; }
             .meigen-badge { background: #f59e0b; }
             .heisoku-badge { background: #14b8a6; }
-            .speaker { color: #475569; }
-            .card-body { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 6px 0; }
-            .quote-text { font-size: 13px; font-weight: 800; line-height: 1.45; word-break: break-word; margin: 0; color: #0f172a; }
+            .card-serial { color: #94a3b8; font-family: monospace; font-size: 10px; }
+            .card-body { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 8px 0; }
+            .quote-text { font-size: 14px; font-weight: 800; line-height: 1.5; word-break: break-word; margin: 0; color: #0f172a; }
             .card-footer { display: flex; justify-content: space-between; font-size: 7px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 3px; font-family: monospace; }
             @media print {
               body { background: #fff; padding: 0; }
@@ -1053,8 +1064,8 @@
         <body>
           <div class="no-print-bar">
             <div>
-              <strong>たっちレディオ カード印刷プレビュー (全${meigenSelected.length + heisokuSelected.length}枚)</strong>
-              <span style="font-size: 12px; margin-left: 10px; opacity: 0.8;">※ A4用紙にポーカーサイズ(63×88mm)で3列×3段レイアウトされます</span>
+              <strong>たっちレディオ カード印刷プレビュー (全${meigenSelected.length + heisokuSelected.length}枚・発言者なし)</strong>
+              <span style="font-size: 12px; margin-left: 10px; opacity: 0.8;">※ A4用紙にポーカーサイズ(63×88mm)で3列×3段レイアウト</span>
             </div>
             <button class="btn-print" onclick="window.print()">🖨️ 今すぐ印刷 / PDF保存</button>
           </div>
@@ -1070,7 +1081,6 @@
       win.document.close();
     }
 
-    // Fetch Live Raw Logs from GAS
     async function fetchRawLogs() {
       try {
         const res = await fetch(GAS_URL);
